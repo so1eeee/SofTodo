@@ -35,3 +35,10 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
+
+### 직접 정의한 파일
+gradlew
+gradlew.bat
+settings.gradle
