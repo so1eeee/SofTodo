@@ -8,7 +8,9 @@ public class ToDoListApplication {
 
 	public static void main(String[] args) {
 		System.out.println("Branch develop");
-		System.out.println("Test Merge");
+		System.out.println("Branch develop");
+		System.out.println("Branch develop");
+		System.out.println("Branch develop");
 		SpringApplication.run(ToDoListApplication.class, args);
 	}
 
