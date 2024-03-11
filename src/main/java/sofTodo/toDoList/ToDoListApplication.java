@@ -8,6 +8,7 @@ public class ToDoListApplication {
 
 	public static void main(String[] args) {
 		System.out.println("Branch develop");
+		System.out.println("jaebin");
 		SpringApplication.run(ToDoListApplication.class, args);
 	}
 
