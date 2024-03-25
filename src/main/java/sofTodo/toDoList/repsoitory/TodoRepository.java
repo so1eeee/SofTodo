@@ -35,6 +35,11 @@ public class TodoRepository {
         return todolist;
     }
 
+    public void update(Long id, String content) {
+        delete(id);
+        Todo newTodo = new Todo(id,content);
+        todolist.add(newTodo);
+    }
 
     public void delete(Long id) {
         Iterator<Todo> iterator = todolist.iterator();

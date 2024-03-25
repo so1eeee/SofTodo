@@ -38,6 +38,8 @@ public class ToDoListApplication {
 		todoCon.createTodo(todo3);
 		todoCon.deleteTodo(2L);
 		todoCon.readTodo();
+		todoCon.updateTodo(1L, "이재빈의Todo");
+		todoCon.readTodo();
 
 	}
 }

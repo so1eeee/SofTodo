@@ -35,6 +35,10 @@ public class TodoService {
     public void deleteTodo(Long id) {
         todoRepository.delete(id);
     }
+
+    public void updateTodo(Long id, String content) {
+        todoRepository.update(id, content);
+    }
     private ReadTodoDto convertToDto(Todo todo) {
         return new ReadTodoDto(todo.getId(), todo.getContent());
     }
