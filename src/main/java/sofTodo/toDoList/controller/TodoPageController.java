@@ -10,8 +10,5 @@ public class TodoPageController {
         return "home";
     }
 
-    @GetMapping("/todo")
-    public String getTodoView() {
-        return "todo";
-    }
+
 }
