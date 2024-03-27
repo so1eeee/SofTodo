@@ -9,6 +9,4 @@ public class TodoPageController {
     public String getTodoListView() {
         return "home";
     }
-
-
 }
