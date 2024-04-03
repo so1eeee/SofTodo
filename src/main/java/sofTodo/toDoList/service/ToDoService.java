@@ -16,7 +16,7 @@ public class ToDoService {
         toDoItemRepository.save(toDoItem);
     }
 
-    public void EditToDoItem(String content, Long id) {
+    public void editToDoItem(String content, Long id) {
         ToDoItem toDoItem = new ToDoItem();
         toDoItem.setContent(content);
         toDoItem.setId(id);

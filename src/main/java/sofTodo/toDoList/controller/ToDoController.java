@@ -52,7 +52,7 @@ public class ToDoController {
 
     @PostMapping("/edit")
     String editItem(String content, Long id) {
-        toDoService.EditToDoItem(content,id);
+        toDoService.editToDoItem(content,id);
         return "redirect:/todolist";
     }
 }
