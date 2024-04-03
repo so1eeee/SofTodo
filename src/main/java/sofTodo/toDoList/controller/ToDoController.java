@@ -6,12 +6,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import sofTodo.toDoList.domain.ToDoItem;
 import sofTodo.toDoList.repository.ToDoItemRepository;
 import sofTodo.toDoList.service.ToDoServiceImpl;
-
-import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -19,11 +15,9 @@ public class ToDoController {
     private final ToDoItemRepository toDoItemRepository;
     private final ToDoServiceImpl toDoService;
 
-    //리팩토링 필요 todoItemRepository는 service에서만 가져다 써야함
     @GetMapping("/todolist")
     String list(Model model) {
-        List<ToDoItem> result = toDoItemRepository.findAll();
-        model.addAttribute("todoitems", result);
+        toDoService.findAll(model);
         return "todolist";
     }
 
@@ -38,17 +32,14 @@ public class ToDoController {
         return "redirect:/todolist";
     }
 
-    //리팩토링 필요 todoItemRepository는 service에서만 가져다 써야함
     @GetMapping("/edit/{id}")
     String edit(Model model, @PathVariable Long id) {
-        Optional<ToDoItem> result = toDoItemRepository.findById(id);
-        if (result.isPresent()) {
-            model.addAttribute("data", result.get());
+        int res = toDoService.editToDoItem(model, id);
+        if (res == 1)
             return "edit";
-        } else {
-            return "redirect:/todolist";
-        }
+        return "redirect:/todolist";
     }
+
 
     @PostMapping("/edit")
     String editItem(String content, Long id) {
