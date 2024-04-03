@@ -1,4 +1,4 @@
-package sofTodo.toDoList.controller;
+package sofTodo.toDoList.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import sofTodo.toDoList.domain.ToDoItem;

@@ -10,16 +10,13 @@
 </head>
 <body>
 
-
 <div th:replace="~{nav.html::navbar}"></div>
 
-
-<div class="card" th:each="i : ${todoitems}">
-    <div>
-        <h4 th:text="${i.content}"></h4>
-        <a th:href="@{'/edit/' + ${i.id}}">수정하기</a>
-    </div>
-</div>
+<form action="/edit" method="POST">
+    <input name="id" th:value="${data.id}" style="display:none">
+    <input name="content" th:value="${data.content}">
+    <button type="submit">전송</button>
+</form>
 
 </body>
 </html>
