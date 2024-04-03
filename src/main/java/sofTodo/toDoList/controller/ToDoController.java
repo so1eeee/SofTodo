@@ -34,7 +34,7 @@ public class ToDoController {
 
     @PostMapping("/add")
     String addPost(String content) {
-        toDoService.saveToDoItem(content);
+        toDoService.addToDoItem(content);
         return "redirect:/todolist";
     }
 

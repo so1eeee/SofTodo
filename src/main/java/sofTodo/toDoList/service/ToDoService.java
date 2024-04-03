@@ -10,7 +10,7 @@ import sofTodo.toDoList.domain.ToDoItem;
 public class ToDoService {
     private final ToDoItemRepository toDoItemRepository;
 
-    public void saveToDoItem(String content) {
+    public void addToDoItem(String content) {
         ToDoItem toDoItem = new ToDoItem();
         toDoItem.setContent(content);
         toDoItemRepository.save(toDoItem);
@@ -22,5 +22,4 @@ public class ToDoService {
         toDoItem.setId(id);
         toDoItemRepository.save(toDoItem);
     }
-
 }
