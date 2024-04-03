@@ -6,13 +6,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import sofTodo.toDoList.repository.ToDoItemRepository;
 import sofTodo.toDoList.service.ToDoServiceImpl;
 
 @Controller
 @RequiredArgsConstructor
 public class ToDoController {
-    private final ToDoItemRepository toDoItemRepository;
     private final ToDoServiceImpl toDoService;
 
     @GetMapping("/todolist")
@@ -39,7 +37,6 @@ public class ToDoController {
             return "edit";
         return "redirect:/todolist";
     }
-
 
     @PostMapping("/edit")
     String editItem(String content, Long id) {

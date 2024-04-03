@@ -41,8 +41,8 @@ public class ToDoServiceImpl implements ToDoService {
         if (result.isPresent()) {
             model.addAttribute("data", result.get());
             return 1;
-        } else {
+        } else
             return 0;
-        }
+
     }
 }
