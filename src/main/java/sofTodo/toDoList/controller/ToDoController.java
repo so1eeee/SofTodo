@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import sofTodo.toDoList.domain.ToDoItem;
 import sofTodo.toDoList.repository.ToDoItemRepository;
-import sofTodo.toDoList.service.ToDoService;
+import sofTodo.toDoList.service.ToDoServiceImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,16 +17,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ToDoController {
     private final ToDoItemRepository toDoItemRepository;
-    private final ToDoService toDoService;
+    private final ToDoServiceImpl toDoService;
 
     @GetMapping("/todolist")
     String list(Model model) {
         List<ToDoItem> result = toDoItemRepository.findAll();
-
         model.addAttribute("todoitems", result);
         return "todolist";
     }
-
     @GetMapping("/write")
     String write() {
         return "write";
@@ -37,8 +35,6 @@ public class ToDoController {
         toDoService.addToDoItem(content);
         return "redirect:/todolist";
     }
-
-
     @GetMapping("/edit/{id}")
     String edit(Model model, @PathVariable Long id) {
         Optional<ToDoItem> result = toDoItemRepository.findById(id);

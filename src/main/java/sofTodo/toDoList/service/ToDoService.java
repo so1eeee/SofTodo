@@ -1,25 +1,8 @@
 package sofTodo.toDoList.service;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import sofTodo.toDoList.repository.ToDoItemRepository;
-import sofTodo.toDoList.domain.ToDoItem;
+public interface ToDoService {
+    void addToDoItem(String content);
 
-@Service
-@RequiredArgsConstructor
-public class ToDoService {
-    private final ToDoItemRepository toDoItemRepository;
+    void editToDoItem(String content, Long id);
 
-    public void addToDoItem(String content) {
-        ToDoItem toDoItem = new ToDoItem();
-        toDoItem.setContent(content);
-        toDoItemRepository.save(toDoItem);
-    }
-
-    public void editToDoItem(String content, Long id) {
-        ToDoItem toDoItem = new ToDoItem();
-        toDoItem.setContent(content);
-        toDoItem.setId(id);
-        toDoItemRepository.save(toDoItem);
-    }
 }
