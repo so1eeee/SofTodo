@@ -19,12 +19,14 @@ public class ToDoController {
     private final ToDoItemRepository toDoItemRepository;
     private final ToDoServiceImpl toDoService;
 
+    //리팩토링 필요 todoItemRepository는 service에서만 가져다 써야함
     @GetMapping("/todolist")
     String list(Model model) {
         List<ToDoItem> result = toDoItemRepository.findAll();
         model.addAttribute("todoitems", result);
         return "todolist";
     }
+
     @GetMapping("/write")
     String write() {
         return "write";
@@ -35,6 +37,8 @@ public class ToDoController {
         toDoService.addToDoItem(content);
         return "redirect:/todolist";
     }
+
+    //리팩토링 필요 todoItemRepository는 service에서만 가져다 써야함
     @GetMapping("/edit/{id}")
     String edit(Model model, @PathVariable Long id) {
         Optional<ToDoItem> result = toDoItemRepository.findById(id);
