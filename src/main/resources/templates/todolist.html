@@ -17,6 +17,7 @@
 <div class="card" th:each="i : ${todoitems}">
     <div>
         <h4 th:text="${i.content}"></h4>
+        <a th:href="@{'/edit/' + ${i.id}}">수정하기</a>
     </div>
 </div>
 

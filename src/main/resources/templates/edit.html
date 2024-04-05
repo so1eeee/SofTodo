@@ -12,8 +12,9 @@
 
 <div th:replace="~{nav.html::navbar}"></div>
 
-<form action="/add" method="POST">
-    <input name="content">
+<form action="/edit" method="POST">
+    <input name="id" th:value="${data.id}" style="display:none">
+    <input name="content" th:value="${data.content}">
     <button type="submit">전송</button>
 </form>
 
