@@ -10,15 +10,17 @@
 </head>
 <body>
 
+
 <div th:replace="~{nav.html::navbar}"></div>
 
-<h4>회원가입 폼
-</h4>
-<form action="/addmember" method="POST">
-    <input name="nickname" placeholder="닉네임">
-    <input name="username" placeholder="아이디">
-    <input name="password" type="password" placeholder="비밀번호">
-    <button type="submit">전송</button>
-</form>
+
+<div class="card" th:each="i : ${members}">
+    <div>
+        <h4 th:text="'닉네임 : ' + ${i.nickname}"></h4>
+        <h4 th:text="'아이디 : ' + ${i.username}"></h4>
+        <h4 th:text="'비밀번호 : ' + ${i.password}"></h4>
+    </div>
+</div>
+
 </body>
 </html>
