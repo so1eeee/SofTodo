@@ -41,7 +41,6 @@ public class WebSecurityConfig {
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
                         .defaultSuccessUrl("/todolist")
-                        .failureUrl("/loginfail")
                 )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login")
