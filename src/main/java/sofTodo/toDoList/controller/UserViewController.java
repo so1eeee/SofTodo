@@ -17,6 +17,16 @@ public class UserViewController {
         return "todolist";
     }
 
+
+    // 로그인 실패하면 실패화면으로 보내줌
+    @GetMapping("/loginfail")
+    public String loginFail(){
+        return "loginfail";
+    }
+
+
+
+
     @GetMapping("/signup")
     public String signup(){
         return "signup";
