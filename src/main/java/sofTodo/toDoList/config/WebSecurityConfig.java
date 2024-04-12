@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import sofTodo.toDoList.service.UserDetailService;
 
 @Configuration
@@ -23,12 +24,17 @@ public class WebSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.csrf((csrf) -> csrf.disable());
         http.authorizeHttpRequests((authorize) ->
-                authorize.requestMatchers("/**").permitAll()
-                );
+                authorize.requestMatchers(
+                                new AntPathRequestMatcher("/login"),
+                                new AntPathRequestMatcher("/signup")
+                        ).permitAll()
+                        .anyRequest().authenticated()
+        );
         http.formLogin((formLogin)
                 -> formLogin.loginPage("/login")
-                .defaultSuccessUrl("/")
+                .defaultSuccessUrl("/todolist")
         );
+        http.logout(logout -> logout.logoutUrl("/logout"));
         return http.build();
     }
 
