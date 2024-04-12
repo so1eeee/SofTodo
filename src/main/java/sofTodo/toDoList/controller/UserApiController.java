@@ -24,9 +24,7 @@ public class UserApiController {
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
-        new SecurityContextLogoutHandler().logout(request, response,
-                SecurityContextHolder.getContext().getAuthentication()
-        );
+        userService.logout(request, response);
         return "redirect:/login";
     }
 }
