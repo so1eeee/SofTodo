@@ -26,7 +26,8 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests((authorize) ->
                 authorize.requestMatchers(
                                 new AntPathRequestMatcher("/login"),
-                                new AntPathRequestMatcher("/signup")
+                                new AntPathRequestMatcher("/signup"),
+                                new AntPathRequestMatcher("/user")
                         ).permitAll()
                         .anyRequest().authenticated()
         );
