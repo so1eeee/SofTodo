@@ -32,10 +32,8 @@ public class ToDoController {
 
     @GetMapping("/edit/{id}")
     String edit(Model model, @PathVariable Long id) {
-        int res = toDoService.editToDoItem(model, id);
-        if (res == 1)
-            return "edit";
-        return "redirect:/todolist";
+        boolean isLoaded = toDoService.editToDoItem(model, id);
+        return isLoaded ? "edit" : "redirect:/todolist";
     }
 
     @PostMapping("/edit")
