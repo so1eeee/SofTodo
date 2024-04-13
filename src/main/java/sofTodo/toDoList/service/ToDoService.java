@@ -9,7 +9,7 @@ public interface ToDoService {
 
     void findAll(Model model);
 
-    int editToDoItem(Model model, Long id);
+    boolean editToDoItem(Model model, Long id);
 
 
 }

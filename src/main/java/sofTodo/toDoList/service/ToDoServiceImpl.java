@@ -36,13 +36,13 @@ public class ToDoServiceImpl implements ToDoService {
     }
 
     @Override
-    public int editToDoItem(Model model, Long id) {
+    public boolean editToDoItem(Model model, Long id) {
         Optional<ToDoItem> result = toDoItemRepository.findById(id);
-        if (result.isPresent()) {
-            model.addAttribute("data", result.get());
-            return 1;
-        } else
-            return 0;
-
+        return toDoItemRepository.findById(id)
+                .map(item -> {
+                    model.addAttribute("data", item);
+                    return true;
+                })
+                .orElse(false);
     }
 }

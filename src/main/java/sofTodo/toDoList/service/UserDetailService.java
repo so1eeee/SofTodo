@@ -20,11 +20,9 @@ public class UserDetailService implements UserDetailsService {
     private final UserRepository userRepository;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var result = userRepository.findByUsername(username);
-        if (result.isEmpty()) {
-            throw new UsernameNotFoundException("그런 아이디 없음");
-        }
-        var user = result.get();
+        var user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("그런 아이디 없음"));
+
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("일반유저"));
 
