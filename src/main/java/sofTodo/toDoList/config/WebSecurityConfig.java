@@ -33,7 +33,7 @@ public class WebSecurityConfig {
         );
         http.formLogin((formLogin)
                 -> formLogin.loginPage("/login")
-                .defaultSuccessUrl("/todolist", true)
+                .defaultSuccessUrl("/my-page", true)
         );
         http.logout(logout -> logout.logoutUrl("/logout"));
         return http.build();
