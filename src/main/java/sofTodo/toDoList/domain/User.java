@@ -22,9 +22,19 @@ public class User{
     @Column(name="password")
     private String password;
 
+    @Column(name="nickname", unique = true)
+    private String nickname;
+
     @Builder
-    public User(String username, String password, String auth){
+    public User(String username, String password, String auth, String nickname){
         this.username = username;
         this.password = password;
+        this.nickname = nickname;
+    }
+
+    public User update(String nickname) {
+        this.nickname = nickname;
+
+        return this;
     }
 }
