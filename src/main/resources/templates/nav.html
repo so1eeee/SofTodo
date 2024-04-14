@@ -1,9 +1,16 @@
 <div class="nav" th:fragment="navbar">
-    <a class="logo">SofTodo</a>
-    <a href="/todolist">List</a>
-    <a href="/write">Write</a>
-    <a href="/login">로그인</a>
-    <a href="/signup">회원가입</a>
-    <a href="/logout">로그아웃</a>
-    <a href="/my-page">My-Page</a>
+    <!-- 왼쪽 배치 -->
+    <div class="nav-left">
+        <a class="logo" href="/">SofTodo</a>
+        <a href="/todolist">Feed</a>
+        <a href="/ranking">Ranking</a>
+    </div>
+
+    <!-- 오른쪽 배치 -->
+    <div class="nav-right">
+        <a href="/my-page">My-Page</a>
+        <a href="/signup">회원가입</a>
+        <a href="/login">로그인</a>
+        <a href="/logout">로그아웃</a>
+    </div>
 </div>

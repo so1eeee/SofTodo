@@ -8,7 +8,11 @@ group = 'sofTodo'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '21'
+	sourceCompatibility = '17'
+}
+
+compileJava {
+	options.compilerArgs << '-parameters'
 }
 
 configurations {
@@ -22,16 +26,17 @@ repositories {
 }
 
 dependencies {
+	//Thymeleaf
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	//Spring Web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-
 	//Lombok 라이브러리
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
-	//JPA와 MYSQL 접속용 라이브러리
+	//MySQL Driver -> JPA와 MYSQL 접속용 라이브러리
 	runtimeOnly 'com.mysql:mysql-connector-j'
-	//ORM 라이브러리
+	//Spring Data JPA -> ORM 라이브러리
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
 
@@ -40,14 +45,25 @@ dependencies {
 	//devtools
 	implementation 'org.springframework.boot:spring-boot-devtools'
 
-
+	//스프링 시큐리티를 사용하기 위한 스타터 추가
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
+	//타임리프에서 스프링 시큐리티를 사용하기 위한 의존성 추가
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	//스프링 시큐리티를 테스트하기 위한 의존성 추가
 	testImplementation 'org.springframework.security:spring-security-test'
+//
+//
+//	implementation 'com.h2database:h2'
+//	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+//	runtimeOnly 'com.h2database:h2'
+
+	implementation 'org.springframework.boot:spring-boot-starter-hateoas'
 
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
+
+
 }
 
 tasks.named('test') {

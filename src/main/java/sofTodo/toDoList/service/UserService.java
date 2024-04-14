@@ -15,13 +15,13 @@ import sofTodo.toDoList.repository.UserRepository;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public Long save(AddUserRequest dto) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return userRepository.save(User.builder()
+    public void save(AddUserRequest dto) {
+        userRepository.save(User.builder()
                 .username(dto.getUsername())
-                .password(encoder.encode(dto.getPassword()))
-                .build()).getId();
+                .password(bCryptPasswordEncoder.encode(dto.getPassword()))
+                .build());
     }
 
     public void logout(HttpServletRequest request, HttpServletResponse response) {
