@@ -22,9 +22,13 @@ public class User{
     @Column(name="password")
     private String password;
 
+    @Column(name="auth", nullable =false)
+    private String auth;
+
     @Builder
     public User(String username, String password, String auth){
         this.username = username;
         this.password = password;
+        this.auth = auth;
     }
 }

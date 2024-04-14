@@ -23,4 +23,6 @@ public class UserViewController {
         return "mypage";
     }
 
+    @GetMapping("/admin")
+    public String adminP(){return "admin";}
 }

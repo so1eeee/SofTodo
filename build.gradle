@@ -40,6 +40,10 @@ dependencies {
 	//devtools
 	implementation 'org.springframework.boot:spring-boot-devtools'
 
+	//버전이 0.12.3 이 제일 최신인데 버전마다 많이 달라서 보면서 해야됨
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
