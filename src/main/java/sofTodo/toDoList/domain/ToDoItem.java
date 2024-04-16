@@ -15,7 +15,6 @@ public class ToDoItem {
     public Long id;
 
     private String content;
-
     @Override
     public String toString() {
         return "Todo{" +

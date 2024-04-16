@@ -7,9 +7,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import sofTodo.toDoList.domain.User;
 import sofTodo.toDoList.dto.AddUserRequest;
 import sofTodo.toDoList.repository.UserRepository;
+
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -29,4 +32,10 @@ public class UserService {
                 SecurityContextHolder.getContext().getAuthentication()
         );
     }
+
+    public void doSearch(String searchUser, Model model){
+        Optional<User> result = userRepository.findByUsername(searchUser);
+        result.ifPresent(user -> model.addAttribute("user", user));
+    }
+
 }

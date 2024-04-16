@@ -12,8 +12,12 @@
 
 <div th:replace="~{nav.html::navbar}"></div>
 
-
 <h1>마이 페이지 폼</h1>
+
+<form action="/search" method="GET" style="display: inline">
+    <input name ="searchUser" placeholder="회원 검색">
+    <button>검색</button>
+</form>
 
 <h4>유저 이름</h4>
 <div sec:authentication="principal.username"></div>
