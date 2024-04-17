@@ -18,13 +18,13 @@ import sofTodo.toDoList.service.UserDetailService;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class WebSecurityConfig {
+public class WebSecurityConfig{
     private final UserDetailService userService;
 
     @Bean
     public WebSecurityCustomizer configure(){
         return (web) -> web.ignoring()
-                .requestMatchers(new AntPathRequestMatcher("/static/**"));
+                .requestMatchers(new AntPathRequestMatcher("/main.css"));
     }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{

@@ -22,16 +22,17 @@ repositories {
 }
 
 dependencies {
+	//Thymeleaf
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	//Spring Web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-
 	//Lombok 라이브러리
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
-	//JPA와 MYSQL 접속용 라이브러리
+	//MySQL Driver -> JPA와 MYSQL 접속용 라이브러리
 	runtimeOnly 'com.mysql:mysql-connector-j'
-	//ORM 라이브러리
+	//Spring Data JPA -> ORM 라이브러리
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
 
@@ -40,7 +41,7 @@ dependencies {
 	//devtools
 	implementation 'org.springframework.boot:spring-boot-devtools'
 
-
+	//Spring Security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
 	testImplementation 'org.springframework.security:spring-security-test'
