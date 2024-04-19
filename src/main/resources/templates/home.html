@@ -10,19 +10,9 @@
 </head>
 <body>
 
+
 <div th:replace="~{nav.html::navbar}"></div>
 
-
-<h4>로그인 폼</h4>
-
-<div th:if="${param.error}">
-    <h4>아이디나 비번이 틀렸습니다</h4>
-</div>
-<form action="/login" method="POST">
-    <input name="username" placeholder="아이디">
-    <input name="password" placeholder="password">
-    <button type="submit">전송</button>
-</form>
-
+<h1>기본 Home 페이지 입니다. 여기에 사이트 처음 들어왔을때 디자인 + 소개</h1>
 </body>
 </html>

@@ -6,7 +6,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class BasicController {
     @GetMapping("/")
-    public String getToDoListMainView() {
-        return "todolist";
+    public String getToDoListMainView() {return "home";}
+    @GetMapping("/login")
+    public String login(){
+        return "login";
+    }
+    @GetMapping("/join")
+    public String join(){
+        return "join";
+    }
+    @GetMapping("/ranking")
+    public String ranking(){
+        return "ranking";
     }
 }

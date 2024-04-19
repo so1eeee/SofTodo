@@ -25,5 +25,4 @@ public class ToDoItem {
     public ToDoItem(String content) {
         this.content = content;
     }
-
 }
