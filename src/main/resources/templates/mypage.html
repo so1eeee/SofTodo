@@ -1,37 +1,37 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <link href="/main.css" rel="stylesheet">
-</head>
-<body>
+<!--<!doctype html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport"-->
+<!--          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">-->
+<!--    <meta http-equiv="X-UA-Compatible" content="ie=edge">-->
+<!--    <title>Document</title>-->
+<!--    <link href="/main.css" rel="stylesheet">-->
+<!--</head>-->
+<!--<body>-->
 
-<div th:replace="~{nav.html::navbar}"></div>
+<!--<div th:replace="~{nav.html::navbar}"></div>-->
 
-<h1>마이 페이지 폼</h1>
+<!--<h1>마이 페이지 폼</h1>-->
 
-<form action="/search" method="GET" style="display: inline">
-    <input name ="searchUser" placeholder="회원 검색">
-    <button>검색</button>
-</form>
+<!--<form action="/search" method="GET" style="display: inline">-->
+<!--    <input name ="searchUser" placeholder="회원 검색">-->
+<!--    <button>검색</button>-->
+<!--</form>-->
 
-<h4>유저 이름</h4>
-<div sec:authentication="principal.username"></div>
-<div sec:authorize="hasAuthority('일반유저')">
-    <h4>이 유저는 일반유저 권한임</h4>
-</div>
+<!--<h4>유저 이름</h4>-->
+<!--<div sec:authentication="principal.username"></div>-->
+<!--<div sec:authorize="hasAuthority('일반유저')">-->
+<!--    <h4>이 유저는 일반유저 권한임</h4>-->
+<!--</div>-->
 
-<div sec:authorize="isAuthenticated()">
-    <h4>이 유저는 로그인 한 유저입니다.</h4>
-</div>
+<!--<div sec:authorize="isAuthenticated()">-->
+<!--    <h4>이 유저는 로그인 한 유저입니다.</h4>-->
+<!--</div>-->
 
-<div sec:authorize="isAnonymous()">
-    <h4>이 유저는 로그인 한 유저입니다.</h4>
-</div>
+<!--<div sec:authorize="isAnonymous()">-->
+<!--    <h4>이 유저는 로그인 한 유저입니다.</h4>-->
+<!--</div>-->
 
-</body>
-</html>
+<!--</body>-->
+<!--</html>-->

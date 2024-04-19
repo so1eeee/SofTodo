@@ -18,6 +18,9 @@
     <div>
         <h4 th:text="${i.content}"></h4>
         <a th:href="@{'/edit/' + ${i.id}}">수정하기</a>
+        <a th:href="@{'/delete/' + ${i.id}}">삭제하기</a>
+
+
     </div>
 </div>
 

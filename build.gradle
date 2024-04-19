@@ -41,10 +41,6 @@ dependencies {
 	//devtools
 	implementation 'org.springframework.boot:spring-boot-devtools'
 
-	//Spring Security
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
-	testImplementation 'org.springframework.security:spring-security-test'
 }
 
 tasks.named('test') {

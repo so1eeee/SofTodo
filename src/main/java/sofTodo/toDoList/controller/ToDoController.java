@@ -1,44 +1,60 @@
 package sofTodo.toDoList.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import sofTodo.toDoList.domain.ToDoItem;
+import sofTodo.toDoList.dto.AddToDoRequest;
+import sofTodo.toDoList.dto.ToDoResponse;
+import sofTodo.toDoList.dto.UpdateToDoRequest;
 import sofTodo.toDoList.service.ToDoServiceImpl;
 
-@Controller
+import java.util.List;
+
+@RestController//HTTP Response Body에 객체 데이터를 JSON 형식으로 반환하는 컨트롤러
+@RequestMapping("/todo")
 @RequiredArgsConstructor
 public class ToDoController {
     private final ToDoServiceImpl toDoService;
-
-    @GetMapping("/todolist")
-    String list(Model model) {
-        toDoService.findAll(model);
-        return "todolist";
+    @PostMapping
+    public ResponseEntity<ToDoItem> addToDo(@RequestBody AddToDoRequest request) { //@RequestBody 는 HTTP를 요청할 때 응답에 해당하는 값을 @RequestBody가 붙은 대상 객체에 매핑한다.
+        ToDoItem savedToDo = toDoService.saveToDo(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(savedToDo);
     }
 
-    @GetMapping("/write")
-    String write() {
-        return "write";
+    @GetMapping
+    public ResponseEntity<List<ToDoResponse>> findAllToDo(){
+        List<ToDoResponse> todos = toDoService.findAll()
+                .stream()
+                .map(ToDoResponse::new)
+                .toList();
+        return ResponseEntity.ok()
+                .body(todos);
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<ToDoResponse> findToDo(@PathVariable Long id) {
+        ToDoItem toDoItem = toDoService.findById(id);
+
+        return ResponseEntity.ok()
+                .body(new ToDoResponse(toDoItem));
     }
 
-    @PostMapping("/add")
-    String addPost(String content) {
-        toDoService.addToDoItem(content);
-        return "redirect:/todolist";
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteToDo(@PathVariable Long id) {
+        toDoService.delete(id);
+
+        return ResponseEntity.ok()
+                .build();
     }
 
-    @GetMapping("/edit/{id}")
-    String edit(Model model, @PathVariable Long id) {
-        boolean isLoaded = toDoService.editToDoItem(model, id);
-        return isLoaded ? "edit" : "redirect:/todolist";
-    }
+    @PutMapping("/{id}")
+    public ResponseEntity<ToDoItem> updateToDo(@PathVariable Long id, @RequestBody UpdateToDoRequest request) {
+        ToDoItem updatedToDo = toDoService.update(id, request);
 
-    @PostMapping("/edit")
-    String editItem(String content, Long id) {
-        toDoService.editToDoItem(content,id);
-        return "redirect:/todolist";
+        return ResponseEntity.ok()
+                .body(updatedToDo);
     }
 }
