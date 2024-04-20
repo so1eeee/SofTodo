@@ -34,7 +34,7 @@ public class ToDoController {
                 .body(todos);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<ToDoResponse> findToDo(@PathVariable Long id) {
+    public ResponseEntity<ToDoResponse> findToDo(@PathVariable long id) {
         ToDoItem toDoItem = toDoService.findById(id);
 
         return ResponseEntity.ok()
@@ -43,7 +43,7 @@ public class ToDoController {
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteToDo(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteToDo(@PathVariable long id) {
         toDoService.delete(id);
 
         return ResponseEntity.ok()
@@ -51,7 +51,7 @@ public class ToDoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ToDoItem> updateToDo(@PathVariable Long id, @RequestBody UpdateToDoRequest request) {
+    public ResponseEntity<ToDoItem> updateToDo(@PathVariable long id, @RequestBody UpdateToDoRequest request) {
         ToDoItem updatedToDo = toDoService.update(id, request);
 
         return ResponseEntity.ok()

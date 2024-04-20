@@ -16,13 +16,17 @@ public class ToDoItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
-    public Long id;
+    private Long id;
 
-    @Column(name ="content", nullable = false,updatable = false)
+    @Column(name ="content", nullable = false)
     private String content;
 
     @Builder
     public ToDoItem(String content) {
+        this.content = content;
+    }
+
+    public void update(String content) {
         this.content = content;
     }
 }
