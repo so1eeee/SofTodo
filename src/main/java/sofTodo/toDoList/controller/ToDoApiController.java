@@ -15,8 +15,9 @@ import java.util.List;
 @RestController//HTTP Response Body에 객체 데이터를 JSON 형식으로 반환하는 컨트롤러
 @RequestMapping("/todo")
 @RequiredArgsConstructor
-public class ToDoController {
+public class ToDoApiController {
     private final ToDoServiceImpl toDoService;
+
     @PostMapping
     public ResponseEntity<ToDoItem> addToDo(@RequestBody AddToDoRequest request) { //@RequestBody 는 HTTP를 요청할 때 응답에 해당하는 값을 @RequestBody가 붙은 대상 객체에 매핑한다.
         ToDoItem savedToDo = toDoService.saveToDo(request);
@@ -25,7 +26,7 @@ public class ToDoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ToDoResponse>> findAllToDo(){
+    public ResponseEntity<List<ToDoResponse>> findAllToDo() {
         List<ToDoResponse> todos = toDoService.findAll()
                 .stream()
                 .map(ToDoResponse::new)
@@ -33,6 +34,7 @@ public class ToDoController {
         return ResponseEntity.ok()
                 .body(todos);
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<ToDoResponse> findToDo(@PathVariable long id) {
         ToDoItem toDoItem = toDoService.findById(id);
