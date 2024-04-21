@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="/main.css" rel="stylesheet">
+</head>
+<body>
+
+<div th:replace="~{nav.html::navbar}"></div>
+
+<div class="card" th:each="i : ${todos}">
+    <div>
+        <h4 th:text="${i.content}"></h4>
+        <input type="hidden" id="todo-id" th:value="${i.id}">
+        <button type="button" id="modify-btn" th:onclick="|location.href='@{/new-todo?id={todoId}(todoId=${i.id})}'|">수정</button>
+        <button type="button" id="delete-btn">삭제</button>
+    </div>
+</div>
+<button type="button" id="create-btn" th:onclick="|location.href='@{/new-todo}'|">ToDo 생성</button>
+
+<script src="/js/todo.js"></script>
+</body>
+</html>

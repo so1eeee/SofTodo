@@ -19,4 +19,8 @@ public class BasicController {
     public String ranking(){
         return "ranking";
     }
+    @GetMapping("/my-page")
+    public String mypage(){
+        return "mypage";
+    }
 }

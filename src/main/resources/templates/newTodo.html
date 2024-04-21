@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -12,10 +12,12 @@
 
 <div th:replace="~{nav.html::navbar}"></div>
 
-<form action="/add" method="POST">
-    <input name="content">
-    <button type="submit">전송</button>
-</form>
 
+<input type="hidden" id="todo-id" th:value="${todo.id}">
+<input type="text" placeholder="content" id="content" th:value="${todo.content}">
+<button th:if="${todo.id} != null" type="button" id="modify-btn">수정</button>
+<button th:if="${todo.id} == null" type="button" id="create-btn">등록</button>
+
+<script src="/js/todo.js"></script>
 </body>
 </html>

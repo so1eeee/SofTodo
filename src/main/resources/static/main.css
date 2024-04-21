@@ -1,41 +1,131 @@
+/*@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;800&display=swap');*/
+/*.nav {*/
+/*    display: flex;*/
+/*    padding: 10px;*/
+/*    align-items: center;*/
+/*    font-family : 'Montserrat';*/
+/*}*/
+/*.nav a {*/
+/*    margin-right: 10px;*/
+/*    text-decoration : none;*/
+/*    font-weight : 400;*/
+/*    letter-spacing : -0.5px;*/
+/*}*/
+/*.nav .logo {*/
+/*    font-weight : 800;*/
+/*}*/
+
+/*input, button {*/
+/*    padding : 8px 13px;*/
+/*    margin-top : 5px;*/
+/*    border : 1px solid grey;*/
+/*    border-radius : 4px;*/
+/*    vertical-align : middle;*/
+/*}*/
+/*button {*/
+/*    background : black;*/
+/*    color : white;*/
+/*    border : none;*/
+/*}*/
+/*input {*/
+/*    display : block;*/
+/*}*/
+
+/*.card {*/
+/*    margin : 30px auto;*/
+/*    display : flex;*/
+/*}*/
+/*.card img {*/
+/*    width : 150px;*/
+/*    margin-right : 20px;*/
+/*}*/
+
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;800&display=swap');
-.nav {
-    display: flex;
-    padding: 10px;
-    align-items: center;
-    font-family : 'Montserrat';
-}
-.nav a {
-    margin-right: 10px;
-    text-decoration : none;
-    font-weight : 400;
-    letter-spacing : -0.5px;
-}
-.nav .logo {
-    font-weight : 800;
+
+:root {
+    --main-font: 'Montserrat', sans-serif;
+    --primary-color: white;
+    --secondary-color: black;
 }
 
+body {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    font-family: var(--main-font);
+}
+.nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    align-items: center;
+}
+
+.nav-left {
+    display: flex;
+    gap: 10px; /* 왼쪽 아이템 간격 */
+}
+
+.nav-right {
+    display: flex;
+    gap: 10px; /* 오른쪽 아이템 간격 */
+}
+
+.nav a {
+    text-decoration: none;
+    font-weight: 400;
+    letter-spacing: -0.5px;
+    color: black;
+    transition: color 0.2s;
+}
+
+.nav a:hover {
+    color: grey;
+}
+
+.nav .logo {
+    font-weight: 800;
+}
+
+
 input, button {
-    padding : 8px 13px;
-    margin-top : 5px;
-    border : 1px solid grey;
-    border-radius : 4px;
-    vertical-align : middle;
+    padding: 8px 13px;
+    border: 1px solid grey;
+    border-radius: 4px;
 }
+
 button {
-    background : black;
-    color : white;
-    border : none;
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    border: none;
+    transition: background-color 0.2s;
 }
+
+button:hover {
+    background-color: grey;
+}
+
 input {
-    display : block;
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    border-color: grey;
 }
 
 .card {
-    margin : 30px auto;
-    display : flex;
+    display: flex;
+    padding: 20px;
+    margin: 30px auto;
+    border: 1px solid grey;
+    border-radius: 8px;
 }
+
 .card img {
-    width : 150px;
-    margin-right : 20px;
+    width: 150px;
+    height: auto;
+    border-radius: 8px;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }

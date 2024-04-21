@@ -15,20 +15,10 @@ import java.util.List;
 public class ToDoServiceImpl {
     private final ToDoItemRepository toDoItemRepository;
 
-
-
     public ToDoItem saveToDo(AddToDoRequest request) {
         return toDoItemRepository.save(request.toEntity());
     }
-//
-//    @Override
-//    public void editToDoItem(String content, Long id) {
-//        ToDoItem toDoItem = new ToDoItem();
-//        toDoItem.setContent(content);
-//        toDoItem.setId(id);
-//        toDoItemRepository.save(toDoItem);
-//    }
-//
+
     public List<ToDoItem> findAll() {
         return toDoItemRepository.findAll();
     }
@@ -50,24 +40,4 @@ public class ToDoServiceImpl {
         toDoItem.update(request.getContent());
         return toDoItem;
     }
-//
-//    @Override
-//    public boolean editToDoItem(Model model, Long id) {
-//        Optional<ToDoItem> result = toDoItemRepository.findById(id);
-//        return toDoItemRepository.findById(id)
-//                .map(item -> {
-//                    model.addAttribute("data", item);
-//                    return true;
-//                })
-//                .orElse(false);
-//    }
-//
-//    @Override
-//    public void deleteToDoItem(Long id) {
-//        toDoItemRepository.deleteById(id);
-//    }
-//
-//    public void delete(Long id) {
-//        toDoItemRepository.deleteById(id);
-//    }
 }
