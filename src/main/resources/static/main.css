@@ -129,3 +129,11 @@ input {
     flex-direction: column;
     justify-content: center;
 }
+
+
+.large-checkbox {
+    transform: scale(1.5); /* 체크박스 크기를 1.5배로 확장 */
+    -webkit-transform: scale(1.5);
+    -moz-transform: scale(1.5);
+    -o-transform: scale(1.5);
+}

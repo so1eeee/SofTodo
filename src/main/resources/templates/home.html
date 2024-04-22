@@ -1,18 +1,46 @@
-<!doctype html>
-<html lang="en">
+<!--<!doctype html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport"-->
+<!--          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">-->
+<!--    <meta http-equiv="X-UA-Compatible" content="ie=edge">-->
+<!--    <title>Document</title>-->
+<!--    <link href="/main.css" rel="stylesheet">-->
+<!--</head>-->
+<!--<body>-->
+
+
+<!--<div th:replace="~{nav.html::navbar}"></div>-->
+
+<!--<h1>기본 Home 페이지 입니다. 사이트 처음 들어왔을때 디자인 + 소개</h1>-->
+<!--</body>-->
+<!--</html>-->
+
+
+<!DOCTYPE html>
+<html lang='en'>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <link href="/main.css" rel="stylesheet">
+        <link href="/main.css" rel="stylesheet">
+
+    <meta charset='utf-8' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+            });
+            calendar.render();
+        });
+    </script>
 </head>
 <body>
-
-
 <div th:replace="~{nav.html::navbar}"></div>
 
-<h1>기본 Home 페이지 입니다. 사이트 처음 들어왔을때 디자인 + 소개</h1>
+<div id='calendar' style="width: 40%; display: inline-block;"></div>
+
+<!--<div id='calendar'></div>-->
 </body>
 </html>
