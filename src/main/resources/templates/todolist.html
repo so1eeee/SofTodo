@@ -12,7 +12,19 @@
 
 <div th:replace="~{nav.html::navbar}"></div>
 
-<div class="card" th:each="i : ${todos}">
+<!--<div class="card" th:each="i : ${todos}">-->
+<!--    <div>-->
+<!--        <div>-->
+<!--            <h4 th:text="${i.content}" style="display: inline-block; vertical-align: middle;"></h4>-->
+<!--            <input type="checkbox" id="open" name="open" style="display: inline-block; vertical-align: middle;" class="large-checkbox">-->
+<!--            <input type="hidden" id="todo-id" th:value="${i.id}">-->
+<!--        </div>-->
+
+<!--        <button type="button" id="modify-btn" th:onclick="|location.href='@{/new-todo?id={todoId}(todoId=${i.id})}'|">수정</button>-->
+<!--        <button type="button" id="delete-btn">삭제</button>-->
+<!--    </div>-->
+<!--</div>-->
+<div class="card" th:each="i, index : ${todos}">
     <div>
         <div>
             <h4 th:text="${i.content}" style="display: inline-block; vertical-align: middle;"></h4>
@@ -20,10 +32,13 @@
             <input type="hidden" id="todo-id" th:value="${i.id}">
         </div>
 
-        <button type="button" id="modify-btn" th:onclick="|location.href='@{/new-todo?id={todoId}(todoId=${i.id})}'|">수정</button>
-        <button type="button" id="delete-btn">삭제</button>
+        <!-- 고유한 ID 생성 -->
+        <button type="button" id="modify-btn-[[${index}]]" th:onclick="|location.href='@{/new-todo?id={todoId}(todoId=${i.id})}'|">수정</button>
+        <button type="button" id="delete-btn-[[${index}]]">삭제</button>
     </div>
 </div>
+
+
 <button type="button" id="create-btn" th:onclick="|location.href='@{/new-todo}'|">ToDo 생성</button>
 
 <script src="/js/todo.js"></script>

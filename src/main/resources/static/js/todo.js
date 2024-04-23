@@ -1,9 +1,10 @@
 // 삭제 기능
 const deleteButton = document.getElementById('delete-btn');
 
-if (deleteButton) {
-    deleteButton.addEventListener('click', event => {
-        let id = document.getElementById('todo-id').value;
+document.querySelectorAll('[id^="delete-btn"]').forEach(button => {
+    button.addEventListener('click', event => {
+        // 각 카드의 고유한 todo-id 값 얻기
+        const id = event.target.parentElement.querySelector('[id="todo-id"]').value;
         fetch(`/todo/${id}`, {
             method: 'DELETE'
         })
@@ -12,7 +13,8 @@ if (deleteButton) {
                 location.replace('/todolist');
             });
     });
-}
+});
+
 
 // 수정 기능
 const modifyButton = document.getElementById('modify-btn');
