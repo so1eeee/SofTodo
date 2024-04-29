@@ -15,10 +15,4 @@ public class UserViewController {
         return "signup";
     }
 
-//    @PreAuthorize("isAuthenticated()")
-//    @GetMapping("/my-page")
-//    public String mypage(Authentication auth) {
-//        return "mypage";
-//    }
-
 }

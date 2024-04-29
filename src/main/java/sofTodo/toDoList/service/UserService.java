@@ -19,15 +19,4 @@ public class UserService {
                 .password(bCryptPasswordEncoder.encode(dto.getPassword()))
                 .build()).getId();
     }
-
-//    public void logout(HttpServletRequest request, HttpServletResponse response) {
-//        new SecurityContextLogoutHandler().logout(request, response,
-//                SecurityContextHolder.getContext().getAuthentication()
-//        );
-//    }
-//
-//    public void doSearch(String searchUser, Model model){
-//        Optional<User> result = userRepository.findByUsername(searchUser);
-//        result.ifPresent(user -> model.addAttribute("user", user));
-//    }
 }

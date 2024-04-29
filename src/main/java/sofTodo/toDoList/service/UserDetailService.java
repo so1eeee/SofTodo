@@ -18,15 +18,5 @@ public class UserDetailService implements UserDetailsService {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException(username));
     }
-//    @Override
-//    public User loadUserByUsername(String username) throws UsernameNotFoundException {
-//        var user = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new UsernameNotFoundException("그런 아이디 없음"));
-//
-//        List<GrantedAuthority> authorities = new ArrayList<>();
-//        authorities.add(new SimpleGrantedAuthority("일반유저"));
-//
-//        return new User(user.getUsername(), user.getPassword(), authorities);
-//    }
 
 }

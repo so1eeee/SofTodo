@@ -47,6 +47,15 @@ dependencies {
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 	//스프링 시큐리티를 테스트하기 위한 의존성 추가
 	testImplementation 'org.springframework.security:spring-security-test'
+//
+//
+//	implementation 'com.h2database:h2'
+//	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+//	runtimeOnly 'com.h2database:h2'
+
+	implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+
+
 }
 
 tasks.named('test') {

@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-@Table(name="users", indexes = @Index(columnList = "username", name= "작명"))
+@Table(name="users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
@@ -28,6 +28,12 @@ public class User implements UserDetails{
 
     @Column(name="password")
     private String password;
+
+    public User(Long id, String username, String password) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+    }
 
     @Builder
     public User(String username, String password, String auth){

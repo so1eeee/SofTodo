@@ -33,8 +33,7 @@ public class WebSecurityConfig{
                 auth.requestMatchers(
                                 new AntPathRequestMatcher("/login"),
                                 new AntPathRequestMatcher("/signup"),
-                                new AntPathRequestMatcher("/user"),
-                                new AntPathRequestMatcher("/")
+                                new AntPathRequestMatcher("/user")
                         ).permitAll()
                         .anyRequest().authenticated()
         );

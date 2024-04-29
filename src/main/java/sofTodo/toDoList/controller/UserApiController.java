@@ -28,9 +28,4 @@ public class UserApiController {
         return "redirect:/login";
     }
 
-//    @GetMapping("/search")
-//    String doSearch(@RequestParam String searchUser, Model model){
-//        userService.doSearch(searchUser, model);
-//        return "memberlist";
-//    }
 }
