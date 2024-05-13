@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: jdbc:mysql://dogreen-db.chg6o0y6ulw5.ap-northeast-2.rds.amazonaws.com/todolist
+    username: admin
+    password: dlwoqls123!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+    hibernate:
+      ddl-auto: update
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: "1"
+            client-secret: "2"
+            scope: email,profile
+
+jwt:
+  issuer: tnwoql327@gmail.com
+  secret-key: study-springboot

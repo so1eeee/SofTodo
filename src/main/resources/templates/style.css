@@ -1,0 +1,33 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: black;
+}
+
+.scene {
+    perspective: 500px;
+}
+
+.word {
+    font-size: 50px;
+    color: white;
+    text-align: center;
+    animation: rotate 6s infinite linear, glow 1s ease-in-out infinite alternate;
+}
+
+@keyframes rotate {
+    0% { transform: rotateY(0deg); }
+    100% { transform: rotateY(360deg); }
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 20px #FF0000, 0 0 30px #FF0000, 0 0 40px #FF4D4D;
+    }
+    to {
+        text-shadow: 0 0 30px #FF0000, 0 0 40px #FF4D4D, 0 0 50px #FF9999;
+    }
+}
