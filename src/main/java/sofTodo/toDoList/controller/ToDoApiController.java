@@ -13,19 +13,18 @@ import sofTodo.toDoList.service.ToDoServiceImpl;
 import java.util.List;
 
 @RestController//HTTP Response Body에 객체 데이터를 JSON 형식으로 반환하는 컨트롤러
-@RequestMapping("/todo")
 @RequiredArgsConstructor
 public class ToDoApiController {
     private final ToDoServiceImpl toDoService;
 
-    @PostMapping
+    @PostMapping("/todo")
     public ResponseEntity<ToDoItem> addToDo(@RequestBody AddToDoRequest request) { //@RequestBody 는 HTTP를 요청할 때 응답에 해당하는 값을 @RequestBody가 붙은 대상 객체에 매핑한다.
         ToDoItem savedToDo = toDoService.saveToDo(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(savedToDo);
     }
 
-    @GetMapping
+    @GetMapping("/todo")
     public ResponseEntity<List<ToDoResponse>> findAllToDo() {
         List<ToDoResponse> todos = toDoService.findAll()
                 .stream()
@@ -35,7 +34,7 @@ public class ToDoApiController {
                 .body(todos);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/todo/{id}")
     public ResponseEntity<ToDoResponse> findToDo(@PathVariable long id) {
         ToDoItem toDoItem = toDoService.findById(id);
 
@@ -44,7 +43,7 @@ public class ToDoApiController {
     }
 
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/todo/{id}")
     public ResponseEntity<Void> deleteToDo(@PathVariable long id) {
         toDoService.delete(id);
 
@@ -52,7 +51,7 @@ public class ToDoApiController {
                 .build();
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/todo/{id}")
     public ResponseEntity<ToDoItem> updateToDo(@PathVariable long id, @RequestBody UpdateToDoRequest request) {
         ToDoItem updatedToDo = toDoService.update(id, request);
 

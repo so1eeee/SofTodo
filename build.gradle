@@ -8,7 +8,11 @@ group = 'sofTodo'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '21'
+	sourceCompatibility = '17'
+}
+
+compileJava {
+	options.compilerArgs << '-parameters'
 }
 
 configurations {
@@ -54,6 +58,10 @@ dependencies {
 //	runtimeOnly 'com.h2database:h2'
 
 	implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'io.jsonwebtoken:jjwt:0.9.1'
+	implementation 'javax.xml.bind:jaxb-api:2.3.1'
 
 
 }

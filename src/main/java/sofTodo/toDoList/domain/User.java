@@ -23,11 +23,14 @@ public class User implements UserDetails{
     @Column(name="id" , updatable = false)
     private Long id;
 
-    @Column(name="username", nullable = false, unique = true)
+    @Column(name="username", unique = true)
     private String username;
 
     @Column(name="password")
     private String password;
+
+    @Column(name="nickname", unique = true)
+    private String nickname;
 
     public User(Long id, String username, String password) {
         this.id = id;
@@ -35,15 +38,22 @@ public class User implements UserDetails{
         this.password = password;
     }
 
+    public User update(String nickname) {
+        this.nickname = nickname;
+
+        return this;
+    }
+
     @Builder
-    public User(String username, String password, String auth){
+    public User(String username, String nickname, String password){
         this.username = username;
+        this.nickname = nickname;
         this.password = password;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("user"));
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     @Override
