@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sofTodo.toDoList.domain.ToDoItem;
+import sofTodo.toDoList.domain.User;
 import sofTodo.toDoList.dto.AddToDoRequest;
 import sofTodo.toDoList.dto.UpdateToDoRequest;
 import sofTodo.toDoList.repository.ToDoItemRepository;
@@ -15,8 +16,8 @@ import java.util.List;
 public class ToDoServiceImpl {
     private final ToDoItemRepository toDoItemRepository;
 
-    public ToDoItem saveToDo(AddToDoRequest request) {
-        return toDoItemRepository.save(request.toEntity());
+    public ToDoItem saveToDo(AddToDoRequest request, User user) {
+        return toDoItemRepository.save(request.toEntity(user));
     }
 
     public List<ToDoItem> findAll() {

@@ -23,14 +23,17 @@ public class User implements UserDetails{
     @Column(name="id" , updatable = false)
     private Long id;
 
+    @Column(name="nickname", unique = true)
+    private String nickname;
+
     @Column(name="username", unique = true)
     private String username;
 
     @Column(name="password")
     private String password;
 
-    @Column(name="nickname", unique = true)
-    private String nickname;
+    @OneToMany(mappedBy = "user")
+    private List<ToDoItem> todoItems;
 
     public User(Long id, String username, String password) {
         this.id = id;
@@ -40,7 +43,6 @@ public class User implements UserDetails{
 
     public User update(String nickname) {
         this.nickname = nickname;
-
         return this;
     }
 

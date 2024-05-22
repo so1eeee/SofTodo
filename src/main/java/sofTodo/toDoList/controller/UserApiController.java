@@ -22,10 +22,10 @@ public class UserApiController {
         return "redirect:/login";
     }
 
-    @GetMapping("/logout")
+    @GetMapping("/user/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
         new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
-        return "redirect:/login";
+        return "redirect:/user/login";
     }
 
 }

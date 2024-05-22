@@ -5,21 +5,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sofTodo.toDoList.domain.ToDoItem;
+import sofTodo.toDoList.domain.User;
 import sofTodo.toDoList.dto.AddToDoRequest;
 import sofTodo.toDoList.dto.ToDoResponse;
 import sofTodo.toDoList.dto.UpdateToDoRequest;
 import sofTodo.toDoList.service.ToDoServiceImpl;
+import sofTodo.toDoList.service.UserService;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController//HTTP Response Body에 객체 데이터를 JSON 형식으로 반환하는 컨트롤러
 @RequiredArgsConstructor
 public class ToDoApiController {
     private final ToDoServiceImpl toDoService;
+    private final UserService userService;
 
     @PostMapping("/todo")
-    public ResponseEntity<ToDoItem> addToDo(@RequestBody AddToDoRequest request) { //@RequestBody 는 HTTP를 요청할 때 응답에 해당하는 값을 @RequestBody가 붙은 대상 객체에 매핑한다.
-        ToDoItem savedToDo = toDoService.saveToDo(request);
+    public ResponseEntity<ToDoItem> addToDo(@RequestBody AddToDoRequest request, Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+        ToDoItem savedToDo = toDoService.saveToDo(request, user);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(savedToDo);
     }
