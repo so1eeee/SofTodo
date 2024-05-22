@@ -22,6 +22,7 @@ spring:
           google:
             client-id: "1"
             client-secret: "2"
+
             scope: email,profile
 
 jwt:
