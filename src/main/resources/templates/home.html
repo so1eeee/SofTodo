@@ -1,46 +1,263 @@
-<!--<!doctype html>-->
-<!--<html lang="en">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <meta name="viewport"-->
-<!--          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">-->
-<!--    <meta http-equiv="X-UA-Compatible" content="ie=edge">-->
-<!--    <title>Document</title>-->
-<!--    <link href="/main.css" rel="stylesheet">-->
-<!--</head>-->
-<!--<body>-->
-
-
-<!--<div th:replace="~{nav.html::navbar}"></div>-->
-
-<!--<h1>기본 Home 페이지 입니다. 사이트 처음 들어왔을때 디자인 + 소개</h1>-->
-<!--</body>-->
-<!--</html>-->
-
-
 <!DOCTYPE html>
 <html lang='en'>
 <head>
-        <link href="/main.css" rel="stylesheet">
-
+    <link href="/main.css" rel="stylesheet">
     <meta charset='utf-8' />
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+    <style>
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .close {
+            color: #666666;
+            position: absolute;
+            top: 10px;
+            right: 30px;
+            font-size: 36px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .modal-content label {
+            display: inline-block;
+            width: 70px; /* 라벨의 고정 폭 */
+            text-align: right; /* 라벨의 텍스트 오른쪽 정렬 */
+            margin-right: 10px; /* 라벨과 입력 필드 간의 간격 */
+        }
+        .modal-content input[type="text"],
+        .modal-content input[type="date"],
+        .modal-content input[type="color"] {
+            width: 60%; /* 입력 필드의 폭을 줄임 */
+            padding: 7px; /* 입력 필드에 여백 추가 */
+            margin: 2px 0; /* 입력 필드의 상하 여백 */
+            box-sizing: border-box; /* 테두리와 패딩을 포함한 전체 너비를 설정 */
+            font-size: 16px; /* 입력 필드의 폰트 크기 */
+            display: inline-block;
+        }
+        .modal-content button {
+            background-color: #FEDD40;
+            font-size: 18px;
+            color: black;
+            padding: 10px 5px;
+            border: 3px #666666;
+            cursor: pointer;
+            width: 40%;
+            display: block;
+            margin: 10px auto; /* 버튼을 중앙으로 정렬 */
+        }
+        .modal-content button:hover {
+            background-color: #45a049;
+        }
+        .modal-content h2 {
+            font-size: 27px; /* 제목의 폰트 크기를 25px로 설정 */
+            text-align: center; /* 가운데 정렬 */
+            margin-top: 0;
+        }
+        #sidebar {
+            width: 27%;
+            display: inline-block;
+            border-radius: 20px;
+            vertical-align: top;
+            padding: 7px;
+            border: 2px solid #888;
+            margin-left: 5%;
+            margin-top: 20px; /* 상단 간격 추가 */
+        }
+        #sidebar h3 {
+            font-size: 28px;
+            margin-top: 10px;
+            margin-bottom: 0;
+            margin-left: 10px;
+        }
+        #addEventButton {
+            width: 65%;
+            font-size: 16px;
+            display: block;
+            margin: 17px auto 15px;
+        }
+        .event-item {
+            margin: 10px 15px;
+            font-size: 17px;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+        }
+        #calendar {
+            margin-top: 20px; /* 상단 간격 추가 */
+        }
+        .fc-daygrid-day.fc-day-today {
+            background-color: rgb(66,181,68,0.4) !important; /* 현재 날짜의 배경색 */
+        }
+        .fc-daygrid-day.fc-day-selected {
+            background-color: rgb(133,221,134,0.4) !important; /* 선택된 날짜의 배경색 */
+        }
+        .fc-day-selected .fc-daygrid-day-number {
+            font-weight: bold; /* 선택된 날짜의 숫자를 진하게 */
+        }
+        hr {
+            border: 2px solid black; /* hr 태그를 두껍게 설정 */
+            margin-bottom: 5px /* 제목과의 간격을 줄임 */
+        }
+    </style>
     <script>
-
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
+            var sidebarDateEl = document.getElementById('sidebar-date');
+            var sidebarEventsEl = document.getElementById('sidebar-events');
+            var currentSelectedDate = new Date().toISOString().split('T')[0];
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
+                events: [],
+                dateClick: function(info) {
+                    currentSelectedDate = info.dateStr;
+                    updateSidebar(info.dateStr);
+                    highlightSelectedDate(info.dateStr);
+                }
             });
             calendar.render();
+
+            var modal = document.getElementById("eventModal");
+            var span = document.getElementsByClassName("close")[0];
+            var submitBtn = document.getElementById("submitEvent");
+
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
+
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+
+            document.addEventListener('keydown', function(event) {
+                if (event.key === "Escape") {
+                    modal.style.display = "none";
+                }
+            });
+
+            document.getElementById('addEventButton').onclick = function() {
+                document.getElementById('eventDate').value = currentSelectedDate;
+                modal.style.display = "block";
+            }
+
+            submitBtn.onclick = function() {
+                var eventTitle = document.getElementById("eventTitle").value;
+                var eventDate = document.getElementById("eventDate").value;
+                var eventColor = document.getElementById("eventColor").value;
+
+                if (eventTitle && eventDate) {
+                    calendar.addEvent({
+                        title: eventTitle,
+                        start: eventDate,
+                        color: eventColor
+                    });
+                    modal.style.display = "none";
+                    document.getElementById("eventTitle").value = '';
+                    document.getElementById("eventDate").value = '';
+                    document.getElementById("eventColor").value = 'rgb(145, 234, 68,0.7)';
+                    updateSidebar(eventDate); // 일정 추가 후 사이드바 업데이트
+                } else {
+                    alert("Please enter both title and date.");
+                }
+            }
+            /*function updateSidebar(dateStr) {
+                var events = calendar.getEvents().filter(event => event.startStr === dateStr);
+                sidebarDateEl.textContent = dateStr;
+                sidebarEventsEl.innerHTML = '';
+
+                events.forEach(event => {
+                    var eventEl = document.createElement('div');
+                    eventEl.className = 'event-item';
+                    eventEl.textContent = event.title;
+                    eventEl.style.borderLeft = `10px solid ${event.backgroundColor}`; // 일정 색상 표시
+                    sidebarEventsEl.appendChild(eventEl);
+                });
+            }*/
+            function updateSidebar(dateStr) {
+                var events = calendar.getEvents().filter(event => event.startStr === dateStr);
+                sidebarDateEl.textContent = dateStr;
+                sidebarEventsEl.innerHTML = '';
+
+                events.forEach(event => {
+                    var eventEl = document.createElement('div');
+                    eventEl.className = 'event-item';
+                    eventEl.textContent = event.title;
+                    eventEl.style.backgroundColor = event.backgroundColor; // 일정의 배경색 설정
+                    sidebarEventsEl.appendChild(eventEl);
+                });
+            }
+
+
+            function highlightSelectedDate(dateStr) {
+                var allDays = document.querySelectorAll('.fc-daygrid-day');
+                allDays.forEach(day => {
+                    day.classList.remove('fc-day-selected');
+                    if (day.dataset.date === dateStr) {
+                        day.classList.add('fc-day-selected');
+                    }
+                });
+            }
+
+            // 페이지 로드 시 현재 날짜로 사이드바 업데이트
+            updateSidebar(currentSelectedDate);
         });
     </script>
 </head>
 <body>
 <div th:replace="~{nav.html::navbar}"></div>
+<div id='calendar' style="width: 57%; display: inline-block; margin-left: 7%"></div>
+<div id="sidebar">
+    <h3 id="sidebar-date"></h3>
+    <hr>
+    <div id="sidebar-events"></div>
+    <button id="addEventButton">일정 추가</button>
+</div>
 
-<div id='calendar' style="width: 40%; display: inline-block;"></div>
-
-<!--<div id='calendar'></div>-->
+<!-- 모달 창 -->
+<div id="eventModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>일정 추가</h2>
+        <label for="eventTitle">제목:</label>
+        <input type="text" id="eventTitle" name="eventTitle" required>
+        <br><br>
+        <label for="eventDate">날짜:</label>
+        <input type="date" id="eventDate" name="eventDate" required>
+        <br><br>
+        <label for="eventColor">색상:</label>
+        <input type="color" id="eventColor" name="eventColor" value="#FEDD40">
+        <br><br>
+        <button id="submitEvent">추가</button>
+    </div>
+</div>
 </body>
 </html>
