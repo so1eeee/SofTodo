@@ -19,6 +19,7 @@ public class UserService {
 
     public void save(AddUserRequest dto) {
         userRepository.save(User.builder()
+                .nickname(dto.getNickname())
                 .username(dto.getUsername())
                 .password(bCryptPasswordEncoder.encode(dto.getPassword()))
                 .build());

@@ -58,7 +58,7 @@ public class WebSecurityConfig{
                 // 폼 로그인 설정
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
-                        .defaultSuccessUrl("/my-page", true)
+                        .defaultSuccessUrl("/home", true)
                         .permitAll()
                 )
                 // 로그아웃 설정
@@ -82,7 +82,7 @@ public class WebSecurityConfig{
 
                 // 접근 제어 설정
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/signup", "/user").permitAll()
+                        .requestMatchers("/login", "/signup", "/user","/hello","/").permitAll()
                         .requestMatchers("/api/token").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated()

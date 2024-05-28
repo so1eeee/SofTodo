@@ -1,69 +1,104 @@
-<!--<!doctype html>-->
-<!--<html lang="en">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <meta name="viewport"-->
-<!--          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">-->
-<!--    <meta http-equiv="X-UA-Compatible" content="ie=edge">-->
-<!--    <title>Document</title>-->
-<!--    <link href="/main.css" rel="stylesheet">-->
-<!--</head>-->
-<!--<body>-->
-
-<!--<div th:replace="~{nav.html::navbar}"></div>-->
-
-
-<!--<h4>회원가입 폼</h4>-->
-<!--<form action="/user" method="POST">-->
-<!--    <input name="username" placeholder="아이디">-->
-<!--    <input name="password" placeholder="password">-->
-<!--    <button type="submit">전송</button>-->
-<!--</form>-->
-
-<!--</body>-->
-<!--</html>-->
-
-
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>회원 가입</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
-
     <style>
-        .gradient-custom {
-            background: linear-gradient(to right, rgba(254, 238, 229, 1), rgba(229, 193, 197, 1))
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f8f9fa;
+        }
+        .signup-card {
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 500px;
+        }
+        .signup-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #000;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .btn-custom {
+            background-color: #3C5E2C;
+            color: white;
+        }
+        .margin-bottom-20 {
+            margin-bottom: 20px;
+        }
+        .login-link {
+            color: black;
+            display: block;
+            text-align: center;
+            margin-top: 20px;
         }
     </style>
 </head>
-<body class="gradient-custom">
+<body>
+
 <section class="d-flex vh-100">
-    <div class="container-fluid row justify-content-center align-content-center">
-        <div class="card bg-dark" style="border-radius: 1rem;">
-            <div class="card-body p-5 text-center">
-                <h2 class="text-white">SIGN UP</h2>
-                <p class="text-white-50 mt-2 mb-5">서비스 사용을 위한 회원 가입</p>
+    <div class="container d-flex flex-column align-items-center justify-content-center">
+        <div class="signup-title">두그린에 오신 것을 환영합니다</div>
+        <div class="card signup-card">
+            <div class="card-body">
+                <form action="/user" method="POST" onsubmit="return validatePasswords()">
+                    <!-- 토큰을 추가하여 CSRF 공격 방지 -->
+                    <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}" />
+                    <div class="form-group">
+                        <label for="nickname">닉네임</label>
+                        <input type="text" class="form-control" id="nickname" name="nickname" placeholder="사용하려는 닉네임">
+                    </div>
 
-                <div class = "mb-2">
-                    <form th:action="@{/user}" method="POST">
-                        <!-- 토큰을 추가하여 CSRF 공격 방지 -->
-                        <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}" />
-                        <div class="mb-3">
-                            <label class="form-label text-white">ID</label>
-                            <input type="text" class="form-control" name="username" placeholder="아이디">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-white">Password</label>
-                            <input type="password" class="form-control" name="password" placeholder="비밀번호">
-                        </div>
+                    <div class="form-group">
+                        <label for="username">아이디</label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="아이디">
+                    </div>
 
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </form>
-                </div>
+                    <div class="form-group">
+                        <label for="password">비밀번호</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호">
+                    </div>
+
+                    <div class="form-group margin-bottom-20">
+                        <label for="confirmPassword">비밀번호 확인</label>
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="비밀번호 확인">
+                    </div>
+
+                    <div id="passwordMismatch" class="text-danger margin-bottom-20" style="display:none;">
+                        비밀번호가 일치하지 않습니다.
+                    </div>
+
+                    <button type="submit" class="btn btn-custom btn-block">회원 가입</button>
+                    <a href="login" class="login-link"><span>이미 아이디가 있으신가요?</span></a>
+                </form>
             </div>
         </div>
     </div>
 </section>
+
+<script>
+    function validatePasswords() {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const passwordMismatch = document.getElementById('passwordMismatch');
+
+        if (password !== confirmPassword) {
+            passwordMismatch.style.display = 'block';
+            return false;
+        }
+
+        passwordMismatch.style.display = 'none';
+        return true;
+    }
+</script>
+
 </body>
 </html>

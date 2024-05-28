@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.minidev.json.annotate.JsonIgnore;
 
 @Table(name = "todoitem")
 @Entity
@@ -21,9 +22,14 @@ public class ToDoItem {
     @Column(name ="content", nullable = false)
     private String content;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore()
+    private User user;
+
     @Builder
-    public ToDoItem(String content) {
+    public ToDoItem(String content, User user) {
         this.content = content;
+        this.user = user;
     }
 
     public void update(String content) {

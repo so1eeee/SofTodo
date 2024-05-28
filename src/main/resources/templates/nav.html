@@ -1,7 +1,7 @@
-<div class="nav" th:fragment="navbar">
+<div class="nav" th:fragment="navbar" xmlns:sec="http://www.w3.org/1999/xhtml">
     <!-- 왼쪽 배치 -->
     <div class="nav-left">
-        <a class="logo" href="/">SofTodo</a>
+        <a class="logo" href="/todolist">SofTodo</a>
         <a href="/todolist">Feed</a>
         <a href="/ranking">Ranking</a>
     </div>
@@ -9,8 +9,15 @@
     <!-- 오른쪽 배치 -->
     <div class="nav-right">
         <a href="/my-page">My-Page</a>
-        <a href="/signup">회원가입</a>
-        <a href="/login">로그인</a>
-        <a href="/logout">로그아웃</a>
+        <!--        로그인된 경우에 로그아웃을 표시-->
+        <a  sec:authorize="isAuthenticated()" th:href="@{/user/logout}">로그아웃</a>
     </div>
 </div>
+
+
+<li class="nav-item">
+    <a class="nav-link" th:href="@{/user/login}">로그인</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" th:href="@{/user/signup}">회원가입</a>
+</li>
