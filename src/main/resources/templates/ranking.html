@@ -1,20 +1,101 @@
+
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+          content="width=device-width, initial-scale=1.0">
+    <title>Ranking</title>
     <link href="/main.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        html {
+            height: 100%;
+            margin: 0;
+            background: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .ranking-container {
+            width: 80%;
+            max-width: 800px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            margin: auto; /* Center the div */
+        }
+        .ranking-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+        .ranking-list {
+            list-style: none;
+            padding: 0;
+        }
+        .ranking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 2px solid #ddd;
+            font-weight: bold;
+        }
+        .ranking-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .ranking-item:last-child {
+            border-bottom: none;
+        }
+        .ranking-index {
+            width: 10%;
+            text-align: center;
+        }
+        .nickname {
+            width: 45%;
+            text-align: left;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        .mission-count {
+            width: 45%;
+            text-align: right;
+            color: #555;
+            margin-right: 10px;
+        }
+        .fa-crown {
+            color: #FFD700;
+            font-size: 1.5rem;
+            margin-left: 5px;
+        }
+    </style>
 </head>
 <body>
 
-
 <div th:replace="~{nav.html::navbar}"></div>
 
-
-<h1>Ranking Page 입니다.</h1>
-
+<div class="ranking-container">
+    <div class="ranking-title">랭킹</div>
+    <div class="ranking-header">
+        <span class="ranking-index">등수</span>
+        <span class="nickname">닉네임</span>
+        <span class="mission-count">횟수</span>
+    </div>
+    <ul class="ranking-list">
+        <li class="ranking-item" th:each="user, iterStat : ${topUsers}">
+            <span class="ranking-index" th:text="${iterStat.index + 1}">1</span>
+            <span class="nickname">
+                <span th:text="${user.nickname}">Nickname</span>
+                <i class="fa-solid fa-crown" th:if="${iterStat.index == 0}"></i>
+            </span>
+            <span class="mission-count" th:text="${user.missionSuccessCount} + '회'">Mission Count</span>
+        </li>
+    </ul>
+</div>
 </body>
 </html>

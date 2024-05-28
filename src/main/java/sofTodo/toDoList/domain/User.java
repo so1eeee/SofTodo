@@ -32,6 +32,9 @@ public class User implements UserDetails{
     @Column(name="password")
     private String password;
 
+    @Column(name="missionSuccessCount")
+    private Long missionSuccessCount = 0L;
+
     @OneToMany(mappedBy = "user")
     private List<ToDoItem> todoItems;
 

@@ -12,6 +12,8 @@ import sofTodo.toDoList.domain.User;
 import sofTodo.toDoList.dto.AddUserRequest;
 import sofTodo.toDoList.repository.UserRepository;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class UserService {
@@ -41,4 +43,9 @@ public class UserService {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
+
+    public List<User> getTop5UsersByMissionSuccessCount() {
+        return userRepository.findTop5ByOrderByMissionSuccessCountDesc();
+    }
+
 }
