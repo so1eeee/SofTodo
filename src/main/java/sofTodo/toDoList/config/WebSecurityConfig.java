@@ -36,6 +36,7 @@ public class WebSecurityConfig{
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final NicknameProcessingFilter nicknameProcessingFilter;
 
     @Bean
     public WebSecurityCustomizer configure(){
@@ -79,10 +80,11 @@ public class WebSecurityConfig{
 
                 // 토큰 기반 인증 필터 추가
                 .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-
+                // 닉네임 처리 필터 추가
+                .addFilterBefore(nicknameProcessingFilter, UsernamePasswordAuthenticationFilter.class)
                 // 접근 제어 설정
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/signup", "/user","/hello","/").permitAll()
+                        .requestMatchers("/login", "/signup", "/user", "/hello", "/", "/set-nickname").permitAll() // 새로운 경로 추가
                         .requestMatchers("/api/token").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated()

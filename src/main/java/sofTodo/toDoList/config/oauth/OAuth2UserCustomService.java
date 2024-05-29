@@ -1,5 +1,6 @@
 package sofTodo.toDoList.config.oauth;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -16,6 +17,7 @@ import java.util.Map;
 public class OAuth2UserCustomService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
+    private final HttpSession session;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -27,13 +29,18 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
     private User saveOrUpdate(OAuth2User oAuth2User) {
         Map<String, Object> attributes = oAuth2User.getAttributes();
         String username = (String) attributes.get("email");
-        String name = (String) attributes.get("name");
+        String nickname = (String) session.getAttribute("nickname");
+
         User user = userRepository.findByUsername(username)
-                .map(entity -> entity.update(name))
+                .map(entity -> {
+                    entity.update(nickname);
+                    return entity;
+                })
                 .orElse(User.builder()
                         .username(username)
-                        .nickname(name)
+                        .nickname(nickname)
                         .build());
+
         return userRepository.save(user);
     }
 }
