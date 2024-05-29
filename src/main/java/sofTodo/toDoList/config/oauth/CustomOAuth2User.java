@@ -14,12 +14,12 @@ public class CustomOAuth2User implements OAuth2User, UserDetails {
     private final OAuth2User oAuth2User;
     private final User user;
     private final String nickname;
-    private Long missionSuccessCount;
+    private final Long missionSuccessCount;
 
     public CustomOAuth2User(OAuth2User oAuth2User, User user) {
         this.oAuth2User = oAuth2User;
         this.user = user;
-        this.nickname = user.getNickname();// nickname 설정
+        this.nickname = user.getNickname();
         this.missionSuccessCount = user.getMissionSuccessCount();
     }
 
