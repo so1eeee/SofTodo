@@ -19,12 +19,12 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2User user = super.loadUser(userRequest);
-        saveOrUpdate(user);
-        return user;
+        OAuth2User oAuth2User = super.loadUser(userRequest);
+        User user = saveOrUpdate(oAuth2User);
+        return new CustomOAuth2User(oAuth2User, user);
     }
 
-    private void saveOrUpdate(OAuth2User oAuth2User) {
+    private User saveOrUpdate(OAuth2User oAuth2User) {
         Map<String, Object> attributes = oAuth2User.getAttributes();
         String username = (String) attributes.get("email");
         String name = (String) attributes.get("name");
@@ -34,8 +34,6 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
                         .username(username)
                         .nickname(name)
                         .build());
-        userRepository.save(user);
+        return userRepository.save(user);
     }
-
-
 }
