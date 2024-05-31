@@ -1,13 +1,14 @@
 package sofTodo.toDoList.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import sofTodo.toDoList.domain.ToDoItem;
 import sofTodo.toDoList.dto.ToDoViewResponse;
+import sofTodo.toDoList.repository.UserRepository;
 import sofTodo.toDoList.service.ToDoServiceImpl;
 
 import java.util.List;
@@ -16,10 +17,13 @@ import java.util.List;
 @Controller
 public class ToDoViewController {
     private final ToDoServiceImpl toDoService;
+    private final UserRepository userRepository;
 
     @GetMapping("/todolist")
-    public String getToDo(Model model) {
-        List<ToDoViewResponse> todos = toDoService.findAll().stream()
+    public String getToDo(Model model, Authentication auth) {
+        Long userId = toDoService.extractUserId(auth);
+
+        List<ToDoViewResponse> todos = toDoService.findByUserId(userId).stream()
                 .map(ToDoViewResponse::new)
                 .toList();
         model.addAttribute("todos", todos);
