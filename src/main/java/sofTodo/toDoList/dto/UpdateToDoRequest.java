@@ -9,4 +9,6 @@ import lombok.NoArgsConstructor;
 @Getter
 public class UpdateToDoRequest {
     private String content;
+    private String date;
+    private String color;
 }

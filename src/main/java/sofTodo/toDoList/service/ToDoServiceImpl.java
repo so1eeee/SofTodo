@@ -60,13 +60,12 @@ public class ToDoServiceImpl {
         return null;
     }
 
-
     // 메칭한 메서드를 하나의 트랜잭션으로 묶는 역할을 함. 이렇게 하면 update() 메서드는 엔티티의 필드 값이 바뀌면 중간에 에러가 발생해도 제대로 된 값 수정을 보장하게 되어있음.
     @Transactional
     public ToDoItem update(long id, UpdateToDoRequest request) {
         ToDoItem toDoItem = toDoItemRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
-        toDoItem.update(request.getContent());
+        toDoItem.update(request.getContent(),request.getDate(),request.getColor());
         return toDoItem;
     }
 }

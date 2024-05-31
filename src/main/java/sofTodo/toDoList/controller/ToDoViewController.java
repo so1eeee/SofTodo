@@ -19,25 +19,25 @@ public class ToDoViewController {
     private final ToDoServiceImpl toDoService;
     private final UserRepository userRepository;
 
-    @GetMapping("/todolist")
-    public String getToDo(Model model, Authentication auth) {
-        Long userId = toDoService.extractUserId(auth);
+//    @GetMapping("/todolist")
+//    public String getToDo(Model model, Authentication auth) {
+//        Long userId = toDoService.extractUserId(auth);
+//
+//        List<ToDoViewResponse> todos = toDoService.findByUserId(userId).stream()
+//                .map(ToDoViewResponse::new)
+//                .toList();
+//        model.addAttribute("todos", todos);
+//        return "home";
+//    }
 
-        List<ToDoViewResponse> todos = toDoService.findByUserId(userId).stream()
-                .map(ToDoViewResponse::new)
-                .toList();
-        model.addAttribute("todos", todos);
-        return "todolist";
-    }
-
-    @GetMapping("/new-todo")
-    public String newToDo(@RequestParam(required = false) Long id, Model model) {
-        if (id == null) {
-            model.addAttribute("todo", new ToDoViewResponse());
-        }else{
-            ToDoItem toDoItem = toDoService.findById(id);
-            model.addAttribute("todo", new ToDoViewResponse(toDoItem));
-        }
-        return "newTodo";
-    }
+//    @GetMapping("/new-towo")
+//    public String newToDo(@RequestParam(required = false) Long id, Model model) {
+//        if (id == null) {
+//            model.addAttribute("todo", new ToDoViewResponse());
+//        }else{
+//            ToDoItem toDoItem = toDoService.findById(id);
+//            model.addAttribute("todo", new ToDoViewResponse(toDoItem));
+//        }
+//        return "home";
+//    }
 }

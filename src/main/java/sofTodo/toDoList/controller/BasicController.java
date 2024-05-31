@@ -25,22 +25,20 @@ public class BasicController {
         }
         return new ModelAndView("hello");
     }
-
     @GetMapping("/ranking")
     public String ranking(Model model) {
         model.addAttribute("topUsers", userService.getTop5UsersByMissionSuccessCount());
         return "ranking";
     }
-
     @GetMapping("/my-page")
     public String mypage(){
         return "mypage";
     }
-
     @GetMapping("/hello")
     public String hello(){
         return "hello";
     }
+
     @GetMapping("/home")
     public String home(){
         return "home";
