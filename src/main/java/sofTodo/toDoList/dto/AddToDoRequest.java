@@ -11,11 +11,15 @@ import sofTodo.toDoList.domain.User;
 @Getter
 public class AddToDoRequest {
     private String content;
+    private String date;
+    private String color;
 
     public ToDoItem toEntity(User user){
         return ToDoItem.builder()
                 .user(user)
                 .content(content)
+                .date(date)
+                .color(color)
                 .build();
     }
 }

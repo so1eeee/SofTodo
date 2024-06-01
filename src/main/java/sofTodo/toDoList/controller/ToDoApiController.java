@@ -52,37 +52,65 @@ public class ToDoApiController {
     }
 
     @GetMapping("/todo")
-    public ResponseEntity<List<ToDoResponse>> findAllToDo() {
-        List<ToDoResponse> todos = toDoService.findAll()
-                .stream()
-                .map(ToDoResponse::new)
-                .toList();
-        return ResponseEntity.ok()
-                .body(todos);
+    public ResponseEntity<List<ToDoResponse>> viewToDo(Authentication authentication) {
+        Long userId = null;
+
+        if (authentication.getPrincipal() instanceof DefaultOAuth2User) {
+            DefaultOAuth2User oauthUser = (DefaultOAuth2User) authentication.getPrincipal();
+            String email = (String) oauthUser.getAttributes().get("email"); // OAuth2User에서 nickname 추출
+            User user = userService.findByUsername(email);
+            userId = user.getId();
+        } else if (authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            User user = userService.findByUsername(userDetails.getUsername());
+            userId = user.getId();
+        }
+
+        if (userId != null) {
+            List<ToDoResponse> todos = toDoService.findByUserId(userId)
+                    .stream()
+                    .map(ToDoResponse::new)
+                    .toList();
+            return ResponseEntity.ok()
+                    .body(todos);
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
-    @GetMapping("/todo/{id}")
-    public ResponseEntity<ToDoResponse> findToDo(@PathVariable long id) {
-        ToDoItem toDoItem = toDoService.findById(id);
+//    @GetMapping("/todo")
+//    public ResponseEntity<List<ToDoResponse>> findAllToDo() {
+//        List<ToDoResponse> todos = toDoService.findAll()
+//                .stream()
+//                .map(ToDoResponse::new)
+//                .toList();
+//        return ResponseEntity.ok()
+//                .body(todos);
+//    }
 
-        return ResponseEntity.ok()
-                .body(new ToDoResponse(toDoItem));
-    }
-
-
-    @DeleteMapping("/todo/{id}")
-    public ResponseEntity<Void> deleteToDo(@PathVariable long id) {
-        toDoService.delete(id);
-
-        return ResponseEntity.ok()
-                .build();
-    }
-
-    @PutMapping("/todo/{id}")
-    public ResponseEntity<ToDoItem> updateToDo(@PathVariable long id, @RequestBody UpdateToDoRequest request) {
-        ToDoItem updatedToDo = toDoService.update(id, request);
-
-        return ResponseEntity.ok()
-                .body(updatedToDo);
-    }
+//    @GetMapping("/todo/{id}")
+//    public ResponseEntity<ToDoResponse> findToDo(@PathVariable long id) {
+//        ToDoItem toDoItem = toDoService.findById(id);
+//
+//        return ResponseEntity.ok()
+//                .body(new ToDoResponse(toDoItem));
+//    }
+//
+//
+//    @DeleteMapping("/todo/{id}")
+//    public ResponseEntity<Void> deleteToDo(@PathVariable long id) {
+//        toDoService.delete(id);
+//
+//        return ResponseEntity.ok()
+//                .build();
+//    }
+//
+//    @PutMapping("/todo/{id}")
+//    public ResponseEntity<ToDoItem> updateToDo(@PathVariable long id, @RequestBody UpdateToDoRequest request) {
+//        ToDoItem updatedToDo = toDoService.update(id, request);
+//
+//        return ResponseEntity.ok()
+//                .body(updatedToDo);
+//    }
 }

@@ -2,14 +2,13 @@
     <!-- 왼쪽 배치 -->
     <div class="nav-left">
         <a class="logo" href="/home">SofTodo</a>
-        <a href="/todolist">Feed</a>
         <a href="/ranking">Ranking</a>
     </div>
 
     <!-- 오른쪽 배치 -->
     <div class="nav-right">
         <span th:if="${#authentication.principal != null}">
-            <span th:text="${#authentication.principal.nickname} + '님'"></span>
+            <span th:text="${#authentication.principal.nickname } + '님'"></span>
         </span>
         <a href="/my-page">My-Page</a>
         <!--        로그인된 경우에 로그아웃을 표시-->
