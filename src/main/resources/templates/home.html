@@ -140,100 +140,106 @@
     </style>
     <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function() {
-            // 필요한 요소들 가져오기
             const calendarEl = document.getElementById('calendar');
             const sidebarDateEl = document.getElementById('sidebar-date');
             const sidebarEventsEl = document.getElementById('sidebar-events');
             let currentSelectedDate = new Date().toISOString().split('T')[0];
-
             let calendar;
-            fetch('/todo')
+            let currentUser;
+
+            const modal = document.getElementById("eventModal");
+
+            fetch('/user')
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                    return response.json(); // 응답을 JSON으로 파싱
+                    return response.json();
                 })
-                .then(todos => {
-                    // FullCalendar 이벤트 데이터 형식으로 변환
-                    const events = todos.map(todo => ({
-                        title: todo.content,
-                        start: todo.date,
-                        color: todo.color
-                    }));
-
-                    calendar = new FullCalendar.Calendar(calendarEl, {
-                        initialView: 'dayGridMonth',
-                        events: events,
-                        dateClick: handleDateClick // 날짜 클릭
-                    });
-
-                    updateSidebar(currentSelectedDate);
-                    calendar.render();
-
+                .then(user => {
+                    currentUser = user;
+                    initCalendar();
                 })
                 .catch(error => {
-                    console.error('Error fetching todos:', error);
+                    console.error('Error fetching user:', error);
                 });
 
+            function initCalendar() {
+                fetch('/todo')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(todos => {
+                        const events = todos.map(todo => ({
+                            id: todo.id,
+                            title: todo.content,
+                            start: todo.date,
+                            color: todo.color
+                        }));
 
-            // 이벤트 모달 요소 및 관련 요소들 가져오기
-            const modal = document.getElementById("eventModal");
-            const span = document.querySelector(".close");
-            const submitBtn = document.getElementById("submitEvent");
+                        calendar = new FullCalendar.Calendar(calendarEl, {
+                            initialView: 'dayGridMonth',
+                            events: events,
+                            dateClick: handleDateClick
+                        });
 
-            // 모달 닫기 버튼 클릭 시 동작
-            span.addEventListener('click', closeModal);
-            window.addEventListener('click', windowClick);
-            document.addEventListener('keydown', handleKeyDown);
-            document.getElementById('addEventButton').addEventListener('click', openModal);
-            submitBtn.addEventListener('click', handleEventSubmission);
+                        calendar.render();
+                        updateSidebar(currentSelectedDate);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching todos:', error);
+                    });
 
-            // 모달 열기
+                const span = document.querySelector(".close");
+                const submitBtn = document.getElementById("submitEvent");
+
+                span.addEventListener('click', closeModal);
+                window.addEventListener('click', windowClick);
+                document.addEventListener('keydown', handleKeyDown);
+                document.getElementById('addEventButton').addEventListener('click', openModal);
+                submitBtn.addEventListener('click', handleEventSubmission);
+            }
+
             function openModal() {
                 document.getElementById('eventDate').value = currentSelectedDate;
                 modal.style.display = "block";
             }
 
-            // 모달 닫기
             function closeModal() {
                 modal.style.display = "none";
             }
 
-            // 모달 외부 클릭 시 닫기
             function windowClick(event) {
                 if (event.target === modal) {
                     closeModal();
                 }
             }
 
-            // ESC 키 입력 시 모달 닫기
             function handleKeyDown(event) {
                 if (event.key === "Escape") {
                     closeModal();
                 }
             }
 
-            // 이벤트 추가 처리
             function handleEventSubmission() {
                 const eventTitle = document.getElementById("eventTitle").value;
                 const eventDate = document.getElementById("eventDate").value;
                 const eventColor = document.getElementById("eventColor").value;
-                // 이벤트 제목 및 날짜 입력 확인
+
                 if (eventTitle && eventDate) {
-                    // 캘린더에 이벤트 추가
-                    calendar.addEvent({
-                        title: eventTitle,
-                        start: eventDate,
-                        color: eventColor
-                    });
-                    // 모달 닫기 및 폼 초기화
-                    closeModal();
-                    clearForm();
+                    if (!currentUser) {
+                        alert("사용자 정보를 가져오는데 실패했습니다.");
+                        return;
+                    }
+
                     const requestData = {
                         content: eventTitle,
                         date: eventDate,
-                        color: eventColor
+                        color: eventColor,
+                        userId: currentUser.id
                     };
 
                     fetch('/todo', {
@@ -243,77 +249,99 @@
                         },
                         body: JSON.stringify(requestData)
                     })
-                        .then(response => response.json())
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
                         .then(data => {
-                            console.log("data");
+                            calendar.addEvent({
+                                id: data.id,
+                                title: data.content,
+                                start: data.date,
+                                color: data.color
+                            });
+                            updateSidebar(eventDate);
+                            closeModal();
+                            clearForm();
+                        })
+                        .catch(error => {
+                            console.error('Error adding event:', error);
                         });
-                    updateSidebar(eventDate);
                 } else {
                     alert("제목을 입력해주세요.");
                 }
             }
-            // 폼 초기화
+
             function clearForm() {
                 document.getElementById("eventTitle").value = '';
                 document.getElementById("eventDate").value = '';
                 document.getElementById("eventColor").value = '';
             }
 
-            // 날짜 클릭 시 사이드바 및 캘린더 업데이트
             function handleDateClick(info) {
                 currentSelectedDate = info.dateStr;
                 updateSidebar(info.dateStr);
                 highlightSelectedDate(info.dateStr);
             }
 
-            // 사이드바 업데이트
             function updateSidebar(dateStr) {
+                if (!calendar) {
+                    return;
+                }
+
                 const events = calendar.getEvents().filter(event => event.startStr === dateStr);
                 sidebarDateEl.textContent = dateStr;
                 sidebarEventsEl.innerHTML = '';
 
                 events.forEach(event => {
-                        const eventEl = document.createElement('div');
-                        eventEl.className = 'event-item';
-                        eventEl.textContent = event.title;
-                        eventEl.style.borderLeft = `15px solid ${event.backgroundColor}`;
+                    const eventEl = document.createElement('div');
+                    eventEl.className = 'event-item';
+                    eventEl.textContent = event.title;
+                    eventEl.style.borderLeft = `15px solid ${event.backgroundColor}`;
 
-                        // 체크박스 추가
-                        const checkbox = document.createElement('input');
-                        checkbox.type = 'checkbox';
-                        eventEl.appendChild(checkbox);
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    eventEl.appendChild(checkbox);
 
-                        const buttonsContainer = document.createElement('div');
-                        buttonsContainer.className = 'buttons';
-                        eventEl.appendChild(buttonsContainer);
+                    const buttonsContainer = document.createElement('div');
+                    buttonsContainer.className = 'buttons';
+                    eventEl.appendChild(buttonsContainer);
 
-                        // 수정 버튼 추가
-                        const editButton = document.createElement('button');
-                        editButton.textContent = '수정';
-                        editButton.addEventListener('click', () => {
-                            // 수정함수 등록
-                        });
-                        buttonsContainer.appendChild(editButton);
+                    const editButton = document.createElement('button');
+                    editButton.textContent = '수정';
+                    editButton.addEventListener('click', () => {
+                        openEditModal(event.id, event);
+                    });
+                    buttonsContainer.appendChild(editButton);
 
-                        // 삭제 버튼 추가
-                        const deleteButton = document.createElement('button');
-                        deleteButton.textContent = '삭제';
-                        deleteButton.addEventListener('click', () => {
-                            if (confirm('정말 삭제하시겠습니까?')) {
-                                event.remove(); // 캘린더에서 이벤트 삭제
-                                eventEl.remove(); // 사이드바에서 이벤트 삭제
-                                //삭제함수 등록
-                            }
-                        });
-                        buttonsContainer.appendChild(deleteButton);
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = '삭제';
+                    deleteButton.addEventListener('click', () => {
+                        if (confirm('정말 삭제하시겠습니까?')) {
+                            fetch(`/todo/${currentUser.id}/${event.id}`, {
+                                method: 'DELETE',
+                            })
+                                .then(response => {
+                                    if (response.ok) {
+                                        event.remove();
+                                        eventEl.remove();
+                                    } else {
+                                        alert('삭제 실패');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error deleting event:', error);
+                                });
+                        }
+                    });
+                    buttonsContainer.appendChild(deleteButton);
 
-                        sidebarEventsEl.appendChild(eventEl);
-                    }
-
-                );
+                    sidebarEventsEl.appendChild(eventEl);
+                });
             }
 
-            // 선택된 날짜 강조
             function highlightSelectedDate(dateStr) {
                 const allDays = document.querySelectorAll('.fc-daygrid-day');
                 allDays.forEach(day => {
@@ -323,7 +351,7 @@
                     }
                 });
             }
-            // 날짜 변경
+
             function changeDateByDays(days) {
                 const date = new Date(currentSelectedDate);
                 date.setDate(date.getDate() + days);
@@ -333,7 +361,61 @@
                 highlightSelectedDate(currentSelectedDate);
             }
 
-            // 화살표 키 입력 시 날짜 변경
+            function openEditModal(eventId, event) {
+                document.getElementById('eventTitle').value = event.title;
+                document.getElementById('eventDate').value = event.startStr;
+                document.getElementById('eventColor').value = event.backgroundColor;
+                modal.style.display = "block";
+
+                const submitBtn = document.getElementById("submitEvent");
+                submitBtn.removeEventListener('click', handleEventSubmission);
+                submitBtn.addEventListener('click', () => handleEditEventSubmission(eventId));
+            }
+
+            function handleEditEventSubmission(eventId) {
+                const eventTitle = document.getElementById("eventTitle").value;
+                const eventDate = document.getElementById("eventDate").value;
+                const eventColor = document.getElementById("eventColor").value;
+
+                if (eventTitle && eventDate) {
+                    const requestData = {
+                        content: eventTitle,
+                        date: eventDate,
+                        color: eventColor
+                    };
+
+                    fetch(`/todo/${currentUser.id}/${eventId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestData)
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            const event = calendar.getEventById(eventId);
+                            if (event) {
+                                event.setProp('title', data.content);
+                                event.setStart(data.date);
+                                event.setProp('backgroundColor', data.color);
+                            }
+                            updateSidebar(eventDate);
+                            closeModal();
+                            clearForm();
+                        })
+                        .catch(error => {
+                            console.error('Error editing event:', error);
+                        });
+                } else {
+                    alert("제목을 입력해주세요.");
+                }
+            }
+
             document.addEventListener('keydown', function(event) {
                 if (event.key === "ArrowLeft") {
                     changeDateByDays(-1);
@@ -346,9 +428,9 @@
                 }
             });
 
-            // 페이지 로드 시 사이드바 업데이트
             updateSidebar(currentSelectedDate);
         });
+
     </script>
 
 </head>
