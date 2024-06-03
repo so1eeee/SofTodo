@@ -18,7 +18,7 @@ import sofTodo.toDoList.service.UserService;
 import java.security.Principal;
 import java.util.List;
 
-@RestController//HTTP Response Body에 객체 데이터를 JSON 형식으로 반환하는 컨트롤러
+@RestController
 @RequiredArgsConstructor
 public class ToDoApiController {
     private final ToDoServiceImpl toDoService;
@@ -26,29 +26,29 @@ public class ToDoApiController {
 
     @PostMapping("/todo")
     public ResponseEntity<ToDoItem> addToDo(@RequestBody AddToDoRequest request, Authentication authentication) {
-        Long userId = null;
-
-        if (authentication.getPrincipal() instanceof DefaultOAuth2User) {
-            DefaultOAuth2User oauthUser = (DefaultOAuth2User) authentication.getPrincipal();
-            String email = (String) oauthUser.getAttributes().get("email"); // OAuth2User에서 nickname 추출
-            User user = userService.findByUsername(email);
-            userId = user.getId();
-        } else if (authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            User user = userService.findByUsername(userDetails.getUsername());
-            userId = user.getId();
-        }
+        Long userId = extractUserId(authentication);
 
         if (userId != null) {
             User user = userService.findById(userId);
-            String nickname = user.getNickname();
-            System.out.println("nickname = " + nickname);
-
             ToDoItem savedToDo = toDoService.saveToDo(request, user);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedToDo);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
+    }
+
+    private Long extractUserId(Authentication authentication) {
+        if (authentication.getPrincipal() instanceof DefaultOAuth2User) {
+            DefaultOAuth2User oauthUser = (DefaultOAuth2User) authentication.getPrincipal();
+            String email = (String) oauthUser.getAttributes().get("email");
+            User user = userService.findByUsername(email);
+            return user != null ? user.getId() : null;
+        } else if (authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            User user = userService.findByUsername(userDetails.getUsername());
+            return user != null ? user.getId() : null;
+        }
+        return null;
     }
 
     @GetMapping("/todo")
@@ -57,7 +57,7 @@ public class ToDoApiController {
 
         if (authentication.getPrincipal() instanceof DefaultOAuth2User) {
             DefaultOAuth2User oauthUser = (DefaultOAuth2User) authentication.getPrincipal();
-            String email = (String) oauthUser.getAttributes().get("email"); // OAuth2User에서 nickname 추출
+            String email = (String) oauthUser.getAttributes().get("email");
             User user = userService.findByUsername(email);
             userId = user.getId();
         } else if (authentication.getPrincipal() instanceof UserDetails) {
@@ -71,46 +71,35 @@ public class ToDoApiController {
                     .stream()
                     .map(ToDoResponse::new)
                     .toList();
-            return ResponseEntity.ok()
-                    .body(todos);
-        }
-        else {
+            return ResponseEntity.ok().body(todos);
+        } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 
-//    @GetMapping("/todo")
-//    public ResponseEntity<List<ToDoResponse>> findAllToDo() {
-//        List<ToDoResponse> todos = toDoService.findAll()
-//                .stream()
-//                .map(ToDoResponse::new)
-//                .toList();
-//        return ResponseEntity.ok()
-//                .body(todos);
-//    }
+    @DeleteMapping("/todo/{userId}/{todoId}")
+    public ResponseEntity<Void> deleteToDo(@PathVariable long userId, @PathVariable long todoId) {
+        User user = userService.findById(userId);
+        if (user != null) {
+            ToDoItem toDoItem = toDoService.findById(todoId);
+            if (toDoItem != null && toDoItem.getUser().getId().equals(userId)) {
+                toDoService.delete(todoId);
+                return ResponseEntity.ok().build();
+            }
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
 
-//    @GetMapping("/todo/{id}")
-//    public ResponseEntity<ToDoResponse> findToDo(@PathVariable long id) {
-//        ToDoItem toDoItem = toDoService.findById(id);
-//
-//        return ResponseEntity.ok()
-//                .body(new ToDoResponse(toDoItem));
-//    }
-//
-//
-//    @DeleteMapping("/todo/{id}")
-//    public ResponseEntity<Void> deleteToDo(@PathVariable long id) {
-//        toDoService.delete(id);
-//
-//        return ResponseEntity.ok()
-//                .build();
-//    }
-//
-//    @PutMapping("/todo/{id}")
-//    public ResponseEntity<ToDoItem> updateToDo(@PathVariable long id, @RequestBody UpdateToDoRequest request) {
-//        ToDoItem updatedToDo = toDoService.update(id, request);
-//
-//        return ResponseEntity.ok()
-//                .body(updatedToDo);
-//    }
+    @PutMapping("/todo/{userId}/{todoId}")
+    public ResponseEntity<ToDoItem> updateToDo(@PathVariable long userId, @PathVariable long todoId, @RequestBody UpdateToDoRequest request) {
+        User user = userService.findById(userId);
+        if (user != null) {
+            ToDoItem toDoItem = toDoService.findById(todoId);
+            if (toDoItem != null && toDoItem.getUser().getId().equals(userId)) {
+                ToDoItem updatedToDo = toDoService.update(todoId, request);
+                return ResponseEntity.ok().body(updatedToDo);
+            }
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
 }

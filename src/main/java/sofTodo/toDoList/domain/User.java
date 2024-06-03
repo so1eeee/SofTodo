@@ -1,5 +1,6 @@
 package sofTodo.toDoList.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -36,6 +37,7 @@ public class User implements UserDetails{
     private Long missionSuccessCount = 0L;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<ToDoItem> todoItems;
 
     public User(Long id, String username, String password) {
