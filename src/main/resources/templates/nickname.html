@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>닉네임 설정</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+</head>
+<body>
+<section class="d-flex vh-100">
+    <div class="container d-flex flex-column align-items-center justify-content-center">
+        <div class="login-title">닉네임 설정</div>
+        <div class="card">
+            <div class="card-body text-center">
+                <form action="/nickname" method="POST">
+                    <div class="form-group">
+                        <label class="form-label text-dark">닉네임</label>
+                        <input type="text" placeholder="닉네임" class="form-control" name="nickname" required>
+                    </div>
+                    <button type="submit" class="btn btn-custom btn-block">저장</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
