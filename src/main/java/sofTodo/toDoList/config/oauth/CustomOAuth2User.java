@@ -1,6 +1,7 @@
 package sofTodo.toDoList.config.oauth;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -10,10 +11,11 @@ import java.util.Collection;
 import java.util.Map;
 
 @Getter
+@Setter
 public class CustomOAuth2User implements OAuth2User, UserDetails {
     private final OAuth2User oAuth2User;
     private final User user;
-    private final String nickname;
+    private String nickname;
     private final Long missionSuccessCount;
 
     public CustomOAuth2User(OAuth2User oAuth2User, User user) {
