@@ -35,6 +35,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                                         HttpServletResponse response, Authentication authentication) throws IOException {
         CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         User user = customOAuth2User.getUser();
+        System.out.println("user = " + user.getNickname());
+
+        if (user.getNickname() == null) {
+            getRedirectStrategy().sendRedirect(request, response, "/nickname");
+            return;
+        }
 
         String refreshToken = tokenProvider.generateToken(user, REFRESH_TOKEN_DURATION);
         saveRefreshToken(user.getId(), refreshToken);
