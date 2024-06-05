@@ -29,7 +29,7 @@ import sofTodo.toDoList.service.UserService;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class WebSecurityConfig{
+public class WebSecurityConfig {
     private final UserDetailService userDetailService;
     private final OAuth2UserCustomService oAuth2UserCustomService;
     private final TokenProvider tokenProvider;
@@ -38,9 +38,8 @@ public class WebSecurityConfig{
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Bean
-    public WebSecurityCustomizer configure(){
+    public WebSecurityCustomizer configure() {
         return (web) -> web.ignoring()
-
                 .requestMatchers(
                         new AntPathRequestMatcher("/main.css"),
                         new AntPathRequestMatcher("/img/**"),
@@ -51,43 +50,32 @@ public class WebSecurityConfig{
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                // CSRF 보호 비활성화
                 .csrf(AbstractHttpConfigurer::disable)
-                // 기본 HTTP 인증 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable)
-                // 폼 로그인 설정
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
                         .defaultSuccessUrl("/home", true)
                         .permitAll()
                 )
-                // 로그아웃 설정
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login")
                         .permitAll()
                 )
-                // 세션 관리: JWT 또는 OAuth2 사용 시 상태 비저장
                 .sessionManagement(management -> management
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
-                // OAuth2 로그인 설정
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login")
                         .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserCustomService))
                         .successHandler(oAuth2SuccessHandler())
                 )
-
-                // 토큰 기반 인증 필터 추가
                 .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-
-                // 접근 제어 설정
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/signup", "/user","/hello","/").permitAll()
+                        .requestMatchers("/login", "/signup", "/user", "/hello", "/", "/nickname").permitAll()
                         .requestMatchers("/api/token").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated()
                 )
-                // 예외 처리
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .defaultAuthenticationEntryPointFor(
                                 new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
@@ -124,4 +112,3 @@ public class WebSecurityConfig{
         return new OAuth2AuthorizationRequestBasedOnCookieRepository();
     }
 }
-
