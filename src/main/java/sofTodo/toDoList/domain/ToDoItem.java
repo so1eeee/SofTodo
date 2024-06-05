@@ -32,12 +32,16 @@ public class ToDoItem {
     @JsonIgnore()
     private User user;
 
+    @Column(name = "is_random_mission", nullable = false)
+    private boolean isRandomMission;  // 새로운 필드 추가
+
     @Builder
-    public ToDoItem(User user,String content,String date, String color) {
+    public ToDoItem(User user,String content,String date, String color, boolean isRandomMission) {
         this.user = user;
         this.content = content;
         this.date = date;
         this.color = color;
+        this.isRandomMission = isRandomMission; // 필드 초기화
     }
 
     public void update(String content,String date, String color) {

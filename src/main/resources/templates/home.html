@@ -117,9 +117,13 @@
             height: 25px;
             margin-left: auto; /* 오른쪽으로 이동 */
         }
-        .event-item.button { /* 수정/삭제 버튼 스타일 */
+        .event-item.random-mission {
+            background-color: #FFDD57;
+            border-left: 5px solid #FFD700;
+        }
+        .event-item .buttons {
             display: flex;
-            margin-top: 0;
+            gap: 5px;
         }
         #calendar {
             margin-top: 20px; /* 상단 간격 추가 */
@@ -177,7 +181,10 @@
                             id: todo.id,
                             title: todo.content,
                             start: todo.date,
-                            color: todo.color
+                            color: todo.color,
+                            extendedProps: {
+                                isRandomMission: todo.isRandomMission // 랜덤 미션 여부 추가
+                            }
                         }));
 
                         calendar = new FullCalendar.Calendar(calendarEl, {
@@ -239,7 +246,7 @@
                         content: eventTitle,
                         date: eventDate,
                         color: eventColor,
-                        userId: currentUser.id
+                        isRandomMission: false
                     };
 
                     fetch('/todo', {
@@ -260,7 +267,10 @@
                                 id: data.id,
                                 title: data.content,
                                 start: data.date,
-                                color: data.color
+                                color: data.color,
+                                extendedProps: {
+                                    isRandomMission: data.isRandomMission // 랜덤 미션 여부 추가
+                                }
                             });
                             updateSidebar(eventDate);
                             closeModal();
@@ -285,6 +295,7 @@
                 updateSidebar(info.dateStr);
                 highlightSelectedDate(info.dateStr);
             }
+
             function updateSidebar(dateStr) {
                 if (!calendar) {
                     return;
@@ -296,7 +307,7 @@
 
                 events.forEach(event => {
                     const eventEl = document.createElement('div');
-                    eventEl.className = 'event-item';
+                    eventEl.className = event.extendedProps.isRandomMission ? 'event-item random-mission' : 'event-item';
                     eventEl.textContent = event.title;
                     eventEl.style.borderLeft = `15px solid ${event.backgroundColor}`;
 
@@ -306,9 +317,12 @@
                     // 로컬 스토리지에서 체크박스 상태 불러오기
                     checkbox.checked = getCheckboxState(event.id);
 
-                    // 체크박스 상태가 변경될 때 로컬 스토리지에 저장
+                    // 체크박스 상태가 변경될 때 로컬 스토리지에 저장 및 미션 성공 처리
                     checkbox.addEventListener('change', () => {
                         saveCheckboxState(event.id, checkbox.checked);
+                        if (checkbox.checked && event.extendedProps.isRandomMission) {
+                            updateMissionSuccessCount(currentUser.id);
+                        }
                     });
 
                     eventEl.appendChild(checkbox);
@@ -360,7 +374,23 @@
                 return localStorage.getItem(`checkbox_${eventId}`) === 'true';
             }
 
-
+            function updateMissionSuccessCount(userId) {
+                fetch(`/user/${userId}/mission-success`, {
+                    method: 'POST'
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Mission success count updated:', data);
+                    })
+                    .catch(error => {
+                        console.error('Error updating mission success count:', error);
+                    });
+            }
 
             function highlightSelectedDate(dateStr) {
                 const allDays = document.querySelectorAll('.fc-daygrid-day');

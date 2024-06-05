@@ -48,4 +48,14 @@ public class UserService {
         return userRepository.findTop5ByOrderByMissionSuccessCountDesc();
     }
 
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
+
+    public void incrementMissionSuccessCount(Long userId) {
+        User user = findById(userId);
+        user.setMissionSuccessCount(user.getMissionSuccessCount() + 1);
+        userRepository.save(user);
+    }
+
 }
