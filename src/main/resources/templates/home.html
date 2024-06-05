@@ -285,7 +285,6 @@
                 updateSidebar(info.dateStr);
                 highlightSelectedDate(info.dateStr);
             }
-
             function updateSidebar(dateStr) {
                 if (!calendar) {
                     return;
@@ -303,6 +302,15 @@
 
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
+
+                    // 로컬 스토리지에서 체크박스 상태 불러오기
+                    checkbox.checked = getCheckboxState(event.id);
+
+                    // 체크박스 상태가 변경될 때 로컬 스토리지에 저장
+                    checkbox.addEventListener('change', () => {
+                        saveCheckboxState(event.id, checkbox.checked);
+                    });
+
                     eventEl.appendChild(checkbox);
 
                     const buttonsContainer = document.createElement('div');
@@ -327,6 +335,8 @@
                                     if (response.ok) {
                                         event.remove();
                                         eventEl.remove();
+                                        // 삭제 시 로컬 스토리지에서 체크박스 상태도 제거
+                                        localStorage.removeItem(`checkbox_${event.id}`);
                                     } else {
                                         alert('삭제 실패');
                                     }
@@ -341,6 +351,16 @@
                     sidebarEventsEl.appendChild(eventEl);
                 });
             }
+
+            function saveCheckboxState(eventId, isChecked) {
+                localStorage.setItem(`checkbox_${eventId}`, isChecked);
+            }
+
+            function getCheckboxState(eventId) {
+                return localStorage.getItem(`checkbox_${eventId}`) === 'true';
+            }
+
+
 
             function highlightSelectedDate(dateStr) {
                 const allDays = document.querySelectorAll('.fc-daygrid-day');
