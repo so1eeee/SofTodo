@@ -146,10 +146,11 @@
             let currentSelectedDate = new Date().toISOString().split('T')[0];
             let calendar;
             let currentUser;
+            const slug = window.location.pathname.split('/').pop(); // URL에서 slug 추출
 
             const modal = document.getElementById("eventModal");
 
-            fetch('/user')
+            fetch(`/user`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
@@ -158,14 +159,14 @@
                 })
                 .then(user => {
                     currentUser = user;
-                    initCalendar();
+                    initCalendar(slug);
                 })
                 .catch(error => {
                     console.error('Error fetching user:', error);
                 });
 
-            function initCalendar() {
-                fetch('/todo')
+            function initCalendar(slug) {
+                fetch(`/todo/${slug}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error(`HTTP error! status: ${response.status}`);
@@ -303,6 +304,15 @@
 
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
+
+                    // 로컬 스토리지에서 체크박스 상태 불러오기
+                    checkbox.checked = getCheckboxState(event.id);
+
+                    // 체크박스 상태가 변경될 때 로컬 스토리지에 저장
+                    checkbox.addEventListener('change', () => {
+                        saveCheckboxState(event.id, checkbox.checked);
+                    });
+
                     eventEl.appendChild(checkbox);
 
                     const buttonsContainer = document.createElement('div');
@@ -320,13 +330,15 @@
                     deleteButton.textContent = '삭제';
                     deleteButton.addEventListener('click', () => {
                         if (confirm('정말 삭제하시겠습니까?')) {
-                            fetch(`/todo/${currentUser.id}/${event.id}`, {
+                            fetch(`/todo/${event.id}`, {
                                 method: 'DELETE',
                             })
                                 .then(response => {
                                     if (response.ok) {
                                         event.remove();
                                         eventEl.remove();
+                                        // 삭제 시 로컬 스토리지에서 체크박스 상태도 제거
+                                        localStorage.removeItem(`checkbox_${event.id}`);
                                     } else {
                                         alert('삭제 실패');
                                     }
@@ -341,6 +353,15 @@
                     sidebarEventsEl.appendChild(eventEl);
                 });
             }
+
+            function saveCheckboxState(eventId, isChecked) {
+                localStorage.setItem(`checkbox_${eventId}`, isChecked);
+            }
+
+            function getCheckboxState(eventId) {
+                return localStorage.getItem(`checkbox_${eventId}`) === 'true';
+            }
+
 
             function highlightSelectedDate(dateStr) {
                 const allDays = document.querySelectorAll('.fc-daygrid-day');
@@ -371,7 +392,6 @@
                 submitBtn.removeEventListener('click', handleEventSubmission);
                 submitBtn.addEventListener('click', () => handleEditEventSubmission(eventId));
             }
-
             function handleEditEventSubmission(eventId) {
                 const eventTitle = document.getElementById("eventTitle").value;
                 const eventDate = document.getElementById("eventDate").value;
@@ -384,7 +404,7 @@
                         color: eventColor
                     };
 
-                    fetch(`/todo/${currentUser.id}/${eventId}`, {
+                    fetch(`/todo/${eventId}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json'
@@ -430,9 +450,7 @@
 
             updateSidebar(currentSelectedDate);
         });
-
     </script>
-
 </head>
 <body>
 <div th:replace="~{nav.html::navbar}"></div>
@@ -463,3 +481,4 @@
 </div>
 </body>
 </html>
+

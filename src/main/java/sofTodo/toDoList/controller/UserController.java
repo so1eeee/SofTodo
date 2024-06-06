@@ -24,19 +24,19 @@ public class UserController {
         if (authentication.getPrincipal() instanceof DefaultOAuth2User) {
             DefaultOAuth2User oauthUser = (DefaultOAuth2User) authentication.getPrincipal();
             String email = (String) oauthUser.getAttributes().get("email");
-            User user = userService.findByUsername(email);
-            userId = user.getId();
+            userId = userService.findByUsername(email).map(User::getId).orElse(null);
         } else if (authentication.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            User user = userService.findByUsername(userDetails.getUsername());
-            userId = user.getId();
+            userId = userService.findByUsername(userDetails.getUsername()).map(User::getId).orElse(null);
         }
 
         if (userId != null) {
-            User user = userService.findById(userId);
+            User user = userService.findById(userId).orElse(null);
             return ResponseEntity.ok(user);
         } else {
             return ResponseEntity.badRequest().build();
         }
+
+
     }
 }

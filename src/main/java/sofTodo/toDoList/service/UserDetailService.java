@@ -18,5 +18,4 @@ public class UserDetailService implements UserDetailsService {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException(username));
     }
-
 }

@@ -2,10 +2,7 @@ package sofTodo.toDoList.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +13,7 @@ import java.util.List;
 @Table(name="users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 @Entity
 public class User implements UserDetails{
 
@@ -36,15 +34,19 @@ public class User implements UserDetails{
     @Column(name="missionSuccessCount")
     private Long missionSuccessCount = 0L;
 
+    private String slug;
+
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<ToDoItem> todoItems;
 
-    public User(Long id, String username, String password) {
+    public User(Long id, String username, String password, String slug) {
         this.id = id;
         this.username = username;
         this.password = password;
+        this.slug = slug;
     }
+
 
     public User update(String nickname) {
         this.nickname = nickname;
@@ -52,10 +54,11 @@ public class User implements UserDetails{
     }
 
     @Builder
-    public User(String username, String nickname, String password){
+    public User(String username, String nickname, String password, String slug) {
         this.username = username;
         this.nickname = nickname;
         this.password = password;
+        this.slug = slug;
     }
 
     @Override
