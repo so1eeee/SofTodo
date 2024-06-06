@@ -35,7 +35,7 @@ if (modifyButton) {
         })
             .then(() => {
                 alert('수정이 완료되었습니다.');
-                location.replace(`/todolist`);
+                location.replace(`/home`);
             });
     });
 }
