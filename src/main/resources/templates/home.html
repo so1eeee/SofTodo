@@ -80,25 +80,35 @@
             margin-top: 0;
         }
         #sidebar {
-            width: 27%;
-            display: inline-block;
             border-radius: 20px;
-            vertical-align: top;
-            padding: 7px;
+            padding: 5px;
             border: 2px solid #888;
-            margin-left: 5%;
-            margin-top: 20px; /* 상단 간격 추가 */
+            margin-left: 5px;
+            height: 40%;
         }
-        #sidebar h3 {
+        #guestbook {
+            margin-top : 15px;
+            border-radius: 20px;
+            padding: 5px;
+            border: 2px solid #888;
+            margin-left: 5px;
+            height: 35%; /* 기본 높이를 부모 요소의 50%로 설정 */
+        }
+        #sidebar h3, #guestbook h3 {
             font-size: 28px;
-            margin-top: 10px;
+            margin-top: 9px;
             margin-bottom: 0;
-            margin-left: 10px;
+            margin-left: 5%;
         }
-        #addEventButton {
-            width: 65%;
+        #sidebar-events{
+            overflow-y: auto;
+        }
+
+        #addEventButton,#addGuestBookButton{
+            width: 50%;
             font-size: 16px;
             display: block;
+            align-content: center;
             margin: 17px auto 15px;
         }
         .event-item {
@@ -122,7 +132,11 @@
             margin-top: 0;
         }
         #calendar {
-            margin-top: 20px; /* 상단 간격 추가 */
+            width: 57%;
+            display: inline-block;
+            margin-left: 4%;
+            margin-top: 15px; /* 상단 간격 추가 */
+            margin-right: 10px;
         }
         .fc-daygrid-day.fc-day-today {
             background-color: rgb(66,181,68,0.4) !important; /* 현재 날짜의 배경색 */
@@ -137,6 +151,15 @@
             border: 2px solid black; /* hr 태그를 두껍게 설정 */
             margin-bottom: 5px /* 제목과의 간격을 줄임 */
         }
+        /* container 스타일 */
+        #container {
+            width: 27%;
+            display: inline-block;
+            vertical-align: top;
+            margin-left : 3%;
+            max-height: 56%;
+        }
+
         /* 스타일 추가 */
         .event-item.random-mission {
             background-color: rgba(255, 215, 0, 0.3); /* 임의의 배경색 설정 */
@@ -257,6 +280,52 @@
                     closeModal();
                 }
             }
+
+            function initGuestBook(slug) {
+                fetch(`/guestBook/${slug}`)
+                    .then(response => response.json())
+                    .then(guestbooks => {
+                        renderGuestbooks(guestbooks); // 방명록 데이터 렌더링 함수 호출
+                    })
+                    .catch(error => {
+                        console.error('Error fetching guestbooks:', error);
+                    });
+            }
+
+            function renderGuestbooks(guestbooks) {
+                const guestbookEntries = document.getElementById('guestbook-entries');
+                guestbookEntries.innerHTML = ''; // 기존 내용 지우기
+
+                guestbooks.forEach(entry => {
+                    const entryDiv = document.createElement('div');
+                    entryDiv.className = 'guestbook-entry';
+                    entryDiv.innerHTML = `
+                        <p>내용 :${entry.content} </p>
+                        <p>날짜 :${entry.date} </p>
+                      `;
+                    const editButton = document.createElement('button');
+                    editButton.textContent = '수정';
+                    editButton.addEventListener('click', () => {
+                        // 수정 기능 구현 (예: 모달 창 열기)
+                    });
+                    entryDiv.appendChild(editButton);
+
+                    // 삭제 버튼 추가 (필요하다면)
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = '삭제';
+                    deleteButton.addEventListener('click', () => {
+                        if (confirm('정말 삭제하시겠습니까?')) {
+                            // 삭제 요청 보내기 (예: fetch(`/guest/${entry.id}`, { method: 'DELETE' }))
+                        }
+                    });
+                    entryDiv.appendChild(deleteButton);
+                    guestbookEntries.appendChild(entryDiv);
+                });
+            }
+
+            function handleGuestBookSubmission(slug) {
+            }
+
 
             function handleEventSubmission() {
                 const eventTitle = document.getElementById("eventTitle").value;
@@ -534,18 +603,27 @@
             });
 
             updateSidebar(currentSelectedDate);
+            initGuestBook(slug);
         });
 
     </script>
 </head>
 <body>
 <div th:replace="~{nav.html::navbar}"></div>
-<div id='calendar' style="width: 57%; display: inline-block; margin-left: 7%"></div>
-<div id="sidebar">
-    <h3 id="sidebar-date"></h3>
-    <hr>
-    <div id="sidebar-events"></div>
-    <button id="addEventButton">일정 추가</button>
+<div id='calendar'></div>
+<div id="container">
+    <div id="sidebar">
+        <h3 id="sidebar-date"></h3>
+        <hr>
+        <div id="sidebar-events"></div>
+        <button id="addEventButton">일정 추가</button>
+    </div>
+    <div id="guestbook">
+        <h3>방명록</h3>
+        <hr>
+        <div id="guestbook-entries"></div>
+        <button id="addGuestBookButton">방명록 작성</button>
+    </div>
 </div>
 
 <!-- 모달 창 -->

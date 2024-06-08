@@ -21,8 +21,6 @@ public class UserViewController {
 
     private final UserService userService;
 
-
-
     //로그인을 한 유저가 "/" URL로 접속을 하면 /home으로 redirect 해줌! 아니라면? -> hello(첫 시작 페이지) 페이지로..
     @GetMapping("/")
     public ModelAndView homepage(Authentication authentication) {
