@@ -28,21 +28,26 @@ public class ToDoItem {
     @Column(name ="color", nullable = false)
     private String color;
 
+    @Column(name = "is_random_mission", nullable = false)
+    private boolean isRandomMission;  // 새로운 필드 추가
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore()
     private User user;
 
     @Builder
-    public ToDoItem(User user,String content,String date, String color) {
+    public ToDoItem(User user, String content, String date, String color, boolean isRandomMission) {
         this.user = user;
         this.content = content;
         this.date = date;
         this.color = color;
+        this.isRandomMission = isRandomMission; // 필드 초기화
     }
 
-    public void update(String content,String date, String color) {
+    public void update(String content, String date, String color, boolean randomMission) {
         this.content = content;
         this.date = date;
         this.color = color;
+        this.isRandomMission = randomMission;
     }
 }

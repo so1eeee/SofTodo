@@ -52,7 +52,25 @@ public class UserService {
         return slug;
     }
 
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
+
     public List<User> getTop5UsersByMissionSuccessCount() {
         return userRepository.findTop5ByOrderByMissionSuccessCountDesc();
+    }
+
+    public void incrementMissionSuccessCount(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        user.setMissionSuccessCount(user.getMissionSuccessCount() + 1);
+        userRepository.save(user);
+    }
+
+    public void decrementMissionSuccessCount(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        user.setMissionSuccessCount(user.getMissionSuccessCount() - 1);
+        userRepository.save(user);
     }
 }
