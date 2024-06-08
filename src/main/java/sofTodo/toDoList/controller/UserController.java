@@ -22,24 +22,32 @@ public class UserController {
         if (authentication.getPrincipal() instanceof DefaultOAuth2User) {
             DefaultOAuth2User oauthUser = (DefaultOAuth2User) authentication.getPrincipal();
             String email = (String) oauthUser.getAttributes().get("email");
-            User user = userService.findByUsername(email);
-            userId = user.getId();
+            userId = userService.findByUsername(email).map(User::getId).orElse(null);
         } else if (authentication.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            User user = userService.findByUsername(userDetails.getUsername());
-            userId = user.getId();
+            userId = userService.findByUsername(userDetails.getUsername()).map(User::getId).orElse(null);
         }
 
         if (userId != null) {
-            User user = userService.findById(userId);
+            User user = userService.findById(userId).orElse(null);
             return ResponseEntity.ok(user);
         } else {
             return ResponseEntity.badRequest().build();
         }
     }
-    @PostMapping("/{userId}/mission-success")
-    public ResponseEntity<Void> incrementMissionSuccess(@PathVariable Long userId) {
-        userService.incrementMissionSuccessCount(userId);
+    @PostMapping("/{slug}/increment-mission-success")
+    public ResponseEntity<Void> incrementMissionSuccessCount(@PathVariable String slug) {
+        User user = userService.findBySlug(slug).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        System.out.println("Increment mission success for user " + user.getId()); // 로그 추가
+        userService.incrementMissionSuccessCount(user.getId());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{slug}/decrement-mission-success")
+    public ResponseEntity<Void> decrementMissionSuccessCount(@PathVariable String slug) {
+        User user = userService.findBySlug(slug).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        System.out.println("Decrement mission success for user " + user.getId()); // 로그 추가
+        userService.decrementMissionSuccessCount(user.getId());
         return ResponseEntity.ok().build();
     }
 }

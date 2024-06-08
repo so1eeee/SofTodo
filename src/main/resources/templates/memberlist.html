@@ -1,28 +1,30 @@
-<!--<!doctype html>-->
-<!--<html lang="en">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <meta name="viewport"-->
-<!--          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">-->
-<!--    <meta http-equiv="X-UA-Compatible" content="ie=edge">-->
-<!--    <title>Document</title>-->
-<!--    <link href="/main.css" rel="stylesheet">-->
-<!--</head>-->
-<!--<body>-->
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>회원 조회 결과</title>
+    <link href="/main.css" rel="stylesheet">
+</head>
+<body>
 
+<div th:replace="~{nav.html::navbar}"></div>
 
-<!--<div th:replace="~{nav.html::navbar}"></div>-->
+<h1>회원 조회 결과</h1>
 
-<!--<h1>회원 조회 결과</h1>-->
+<div th:each="user : ${users}">
+    <div class="card">
+        <div>
+            <h4><a th:href="@{/home/{slug}(slug=${user.slug})}" th:text="${user.nickname}"></a></h4>
+        </div>
+    </div>
+</div>
 
-<!--<div class="card" th:if="${user != null}">-->
-<!--    <div>-->
-<!--        <h4 th:text="${user.username}"></h4>-->
-<!--    </div>-->
-<!--</div>-->
-<!--<div th:unless="${user != null}">-->
-<!--    존재하지 않는 회원입니다.-->
-<!--</div>-->
+<div th:if="${users == null || users.isEmpty()}">
+    존재하지 않는 회원입니다.
+</div>
 
-<!--</body>-->
-<!--</html>-->
+</body>
+</html>

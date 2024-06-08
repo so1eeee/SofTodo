@@ -34,15 +34,19 @@ public class User implements UserDetails{
     @Column(name="missionSuccessCount")
     private Long missionSuccessCount = 0L;
 
+    private String slug;
+
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<ToDoItem> todoItems;
 
-    public User(Long id, String username, String password) {
+    public User(Long id, String username, String password, String slug) {
         this.id = id;
         this.username = username;
         this.password = password;
+        this.slug = slug;
     }
+
 
     public User update(String nickname) {
         this.nickname = nickname;
@@ -50,10 +54,11 @@ public class User implements UserDetails{
     }
 
     @Builder
-    public User(String username, String nickname, String password){
+    public User(String username, String nickname, String password, String slug) {
         this.username = username;
         this.nickname = nickname;
         this.password = password;
+        this.slug = slug;
     }
 
     @Override

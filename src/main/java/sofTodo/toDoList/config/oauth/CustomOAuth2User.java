@@ -17,12 +17,14 @@ public class CustomOAuth2User implements OAuth2User, UserDetails {
     private final User user;
     private String nickname;
     private final Long missionSuccessCount;
+    private  String slug;
 
     public CustomOAuth2User(OAuth2User oAuth2User, User user) {
         this.oAuth2User = oAuth2User;
         this.user = user;
         this.nickname = user.getNickname();
         this.missionSuccessCount = user.getMissionSuccessCount();
+        this.slug = user.getSlug();
     }
 
     @Override
@@ -69,4 +71,5 @@ public class CustomOAuth2User implements OAuth2User, UserDetails {
     public boolean isEnabled() {
         return user.isEnabled();
     }
+
 }

@@ -30,12 +30,10 @@ import sofTodo.toDoList.service.UserService;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
-    private final UserDetailService userDetailService;
     private final OAuth2UserCustomService oAuth2UserCustomService;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserService userService;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Bean
     public WebSecurityCustomizer configure() {
@@ -44,17 +42,17 @@ public class WebSecurityConfig {
                         new AntPathRequestMatcher("/main.css"),
                         new AntPathRequestMatcher("/img/**"),
                         new AntPathRequestMatcher("/css/**"),
-                        new AntPathRequestMatcher("js/**"));
+                        new AntPathRequestMatcher("/js/**"));
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
-                        .defaultSuccessUrl("/home", true)
+                        .successHandler(customAuthenticationSuccessHandler)
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -71,7 +69,7 @@ public class WebSecurityConfig {
                 )
                 .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/signup", "/user", "/hello", "/", "/nickname").permitAll()
+                        .requestMatchers("/login", "/signup", "/user", "/hello","/","/nickname").permitAll()
                         .requestMatchers("/api/token").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated()
@@ -112,3 +110,4 @@ public class WebSecurityConfig {
         return new OAuth2AuthorizationRequestBasedOnCookieRepository();
     }
 }
+

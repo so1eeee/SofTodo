@@ -6,6 +6,7 @@ import sofTodo.toDoList.config.jwt.TokenProvider;
 import sofTodo.toDoList.domain.User;
 
 import java.time.Duration;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -20,8 +21,14 @@ public class TokenService {
         }
 
         Long userId = refreshTokenService.findByRefreshToken(refreshToken).getUserId();
-        User user = userService.findById(userId);
+        Optional<User> userOptional = userService.findById(userId);
 
-        return tokenProvider.generateToken(user, Duration.ofHours(2));
+        // Optional을 사용하여 User 객체를 얻음
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            return tokenProvider.generateToken(user, Duration.ofHours(2));
+        } else {
+            throw new IllegalArgumentException("User not found");
+        }
     }
 }

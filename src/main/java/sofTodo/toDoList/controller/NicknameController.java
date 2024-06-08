@@ -10,17 +10,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import sofTodo.toDoList.config.oauth.CustomOAuth2User;
 import sofTodo.toDoList.domain.User;
 import sofTodo.toDoList.repository.UserRepository;
-
-import java.security.Principal;
+import sofTodo.toDoList.service.UserService;
 
 @Controller
 @RequestMapping("/nickname")
 public class NicknameController {
 
     private final UserRepository userRepository;
+    private final UserService userService;
 
-    public NicknameController(UserRepository userRepository) {
+    public NicknameController(UserRepository userRepository, UserService userService) {
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -32,10 +33,13 @@ public class NicknameController {
     public String saveNickname(@RequestParam String nickname, @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         User user = customOAuth2User.getUser();
         user.setNickname(nickname);
+        user.setSlug(userService.generateSlug(nickname));
         userRepository.save(user);
         // CustomOAuth2User 객체의 닉네임 업데이트
         customOAuth2User.setNickname(nickname);
-        return "redirect:/home";  // 닉네임 저장 후 홈으로 리디렉션
+        customOAuth2User.setSlug(user.getSlug());
+
+        System.out.println(user.getSlug());
+        return "redirect:/home/" + user.getSlug();  // 닉네임 저장 후 홈으로 리디렉션
     }
 }
-

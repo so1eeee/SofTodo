@@ -117,13 +117,9 @@
             height: 25px;
             margin-left: auto; /* 오른쪽으로 이동 */
         }
-        .event-item.random-mission {
-            background-color: #FFDD57;
-            border-left: 5px solid #FFD700;
-        }
-        .event-item .buttons {
+        .event-item.button { /* 수정/삭제 버튼 스타일 */
             display: flex;
-            gap: 5px;
+            margin-top: 0;
         }
         #calendar {
             margin-top: 20px; /* 상단 간격 추가 */
@@ -150,10 +146,11 @@
             let currentSelectedDate = new Date().toISOString().split('T')[0];
             let calendar;
             let currentUser;
+            const slug = window.location.pathname.split('/').pop(); // URL에서 slug 추출
 
             const modal = document.getElementById("eventModal");
 
-            fetch('/user')
+            fetch(`/user`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
@@ -162,14 +159,14 @@
                 })
                 .then(user => {
                     currentUser = user;
-                    initCalendar();
+                    initCalendar(slug);
                 })
                 .catch(error => {
                     console.error('Error fetching user:', error);
                 });
 
-            function initCalendar() {
-                fetch('/todo')
+            function initCalendar(slug) {
+                fetch(`/todo/${slug}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error(`HTTP error! status: ${response.status}`);
@@ -182,9 +179,7 @@
                             title: todo.content,
                             start: todo.date,
                             color: todo.color,
-                            extendedProps: {
-                                isRandomMission: todo.isRandomMission // 랜덤 미션 여부 추가
-                            }
+                            extendedProps: { isRandomMission: todo.randomMission } // Add isRandomMission here
                         }));
 
                         calendar = new FullCalendar.Calendar(calendarEl, {
@@ -207,7 +202,7 @@
                 window.addEventListener('click', windowClick);
                 document.addEventListener('keydown', handleKeyDown);
                 document.getElementById('addEventButton').addEventListener('click', openModal);
-                submitBtn.addEventListener('click', handleEventSubmission);
+                submitBtn.addEventListener('click', () => handleSubmitEvent()); // eventId 없이 호출 (새 이벤트 추가)
             }
 
             function openModal() {
@@ -246,7 +241,7 @@
                         content: eventTitle,
                         date: eventDate,
                         color: eventColor,
-                        isRandomMission: false
+                        userId: currentUser.id
                     };
 
                     fetch('/todo', {
@@ -268,9 +263,7 @@
                                 title: data.content,
                                 start: data.date,
                                 color: data.color,
-                                extendedProps: {
-                                    isRandomMission: data.isRandomMission // 랜덤 미션 여부 추가
-                                }
+                                extendedProps: { isRandomMission: data.randomMission } // isRandomMission 값을 추가
                             });
                             updateSidebar(eventDate);
                             closeModal();
@@ -307,21 +300,33 @@
 
                 events.forEach(event => {
                     const eventEl = document.createElement('div');
-                    eventEl.className = event.extendedProps.isRandomMission ? 'event-item random-mission' : 'event-item';
+                    eventEl.className = 'event-item';
                     eventEl.textContent = event.title;
                     eventEl.style.borderLeft = `15px solid ${event.backgroundColor}`;
 
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
+                    checkbox.id = `checkbox_${event.id}`; // Add unique ID
+                    checkbox.name = `checkbox_${event.id}`; // Add unique name
 
                     // 로컬 스토리지에서 체크박스 상태 불러오기
                     checkbox.checked = getCheckboxState(event.id);
 
-                    // 체크박스 상태가 변경될 때 로컬 스토리지에 저장 및 미션 성공 처리
                     checkbox.addEventListener('change', () => {
                         saveCheckboxState(event.id, checkbox.checked);
-                        if (checkbox.checked && event.extendedProps.isRandomMission) {
-                            updateMissionSuccessCount(currentUser.id);
+                        const isRandomMission = event.extendedProps.isRandomMission;
+                        console.log(`Checkbox for event ${event.id} changed to ${checkbox.checked}. isRandomMission: ${isRandomMission}`);
+
+                        if (isRandomMission) {
+                            if (checkbox.checked) {
+                                fetch(`/user/${currentUser.slug}/increment-mission-success`, {
+                                    method: 'POST'
+                                }).catch(error => console.error('Error incrementing mission success count:', error));
+                            } else {
+                                fetch(`/user/${currentUser.slug}/decrement-mission-success`, {
+                                    method: 'POST'
+                                }).catch(error => console.error('Error decrementing mission success count:', error));
+                            }
                         }
                     });
 
@@ -342,7 +347,8 @@
                     deleteButton.textContent = '삭제';
                     deleteButton.addEventListener('click', () => {
                         if (confirm('정말 삭제하시겠습니까?')) {
-                            fetch(`/todo/${currentUser.id}/${event.id}`, {
+                            const isRandomMission = event.extendedProps.isRandomMission;
+                            fetch(`/todo/${event.id}`, {
                                 method: 'DELETE',
                             })
                                 .then(response => {
@@ -351,6 +357,11 @@
                                         eventEl.remove();
                                         // 삭제 시 로컬 스토리지에서 체크박스 상태도 제거
                                         localStorage.removeItem(`checkbox_${event.id}`);
+                                        if (isRandomMission) {
+                                            fetch(`/user/${currentUser.slug}/decrement-mission-success`, {
+                                                method: 'POST'
+                                            }).catch(error => console.error('Error decrementing mission success count:', error));
+                                        }
                                     } else {
                                         alert('삭제 실패');
                                     }
@@ -372,24 +383,6 @@
 
             function getCheckboxState(eventId) {
                 return localStorage.getItem(`checkbox_${eventId}`) === 'true';
-            }
-
-            function updateMissionSuccessCount(userId) {
-                fetch(`/user/${userId}/mission-success`, {
-                    method: 'POST'
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Mission success count updated:', data);
-                    })
-                    .catch(error => {
-                        console.error('Error updating mission success count:', error);
-                    });
             }
 
             function highlightSelectedDate(dateStr) {
@@ -418,11 +411,12 @@
                 modal.style.display = "block";
 
                 const submitBtn = document.getElementById("submitEvent");
-                submitBtn.removeEventListener('click', handleEventSubmission);
-                submitBtn.addEventListener('click', () => handleEditEventSubmission(eventId));
+                submitBtn.removeEventListener('click', handleSubmitEvent); // 기존 이벤트 제거
+                submitBtn.addEventListener('click', () => handleSubmitEvent(eventId)); // eventId와 함께 호출 (이벤트 수정)
             }
 
-            function handleEditEventSubmission(eventId) {
+            // 이벤트 제출 및 수정 처리 함수 통합
+            function handleSubmitEvent(eventId = null) {
                 const eventTitle = document.getElementById("eventTitle").value;
                 const eventDate = document.getElementById("eventDate").value;
                 const eventColor = document.getElementById("eventColor").value;
@@ -434,8 +428,11 @@
                         color: eventColor
                     };
 
-                    fetch(`/todo/${currentUser.id}/${eventId}`, {
-                        method: 'PUT',
+                    const method = eventId ? 'PUT' : 'POST';
+                    const url = eventId ? `/todo/${eventId}` : '/todo';
+
+                    fetch(url, {
+                        method: method,
                         headers: {
                             'Content-Type': 'application/json'
                         },
@@ -448,18 +445,29 @@
                             return response.json();
                         })
                         .then(data => {
-                            const event = calendar.getEventById(eventId);
-                            if (event) {
-                                event.setProp('title', data.content);
-                                event.setStart(data.date);
-                                event.setProp('backgroundColor', data.color);
+                            if (eventId) {
+                                const event = calendar.getEventById(eventId);
+                                if (event) {
+                                    event.setProp('title', data.content);
+                                    event.setStart(data.date);
+                                    event.setProp('backgroundColor', data.color);
+                                    event.setExtendedProp('isRandomMission', data.randomMission); // isRandomMission 갱신
+                                }
+                            } else {
+                                calendar.addEvent({
+                                    id: data.id,
+                                    title: data.content,
+                                    start: data.date,
+                                    color: data.color,
+                                    extendedProps: { isRandomMission: data.randomMission }
+                                });
                             }
                             updateSidebar(eventDate);
                             closeModal();
                             clearForm();
                         })
                         .catch(error => {
-                            console.error('Error editing event:', error);
+                            console.error('Error adding/editing event:', error);
                         });
                 } else {
                     alert("제목을 입력해주세요.");
@@ -480,9 +488,7 @@
 
             updateSidebar(currentSelectedDate);
         });
-
     </script>
-
 </head>
 <body>
 <div th:replace="~{nav.html::navbar}"></div>

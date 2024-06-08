@@ -47,7 +47,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         addRefreshTokenToCookie(request, response, refreshToken);
 
         String accessToken = tokenProvider.generateToken(user, ACCESS_TOKEN_DURATION);
-        String targetUrl = getTargetUrl(accessToken);
+        String targetUrl = getTargetUrl(user.getSlug(),accessToken);
 
         clearAuthenticationAttributes(request, response);
 
@@ -75,8 +75,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         authorizationRequestBasedOnCookieRepository.removeAuthorizationRequestCookies(request, response);
     }
 
-    private String getTargetUrl(String token) {
-        return UriComponentsBuilder.fromUriString(REDIRECT_PATH)
+    private String getTargetUrl(String slug, String token) {
+        return UriComponentsBuilder.fromUriString("/home/" + slug)
                 .queryParam("token", token)
                 .build()
                 .toUriString();

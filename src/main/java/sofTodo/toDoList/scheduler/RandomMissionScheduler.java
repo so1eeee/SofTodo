@@ -3,7 +3,6 @@ package sofTodo.toDoList.scheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import sofTodo.toDoList.domain.RandomMission;
-import sofTodo.toDoList.domain.ToDoItem;
 import sofTodo.toDoList.domain.User;
 import sofTodo.toDoList.dto.AddToDoRequest;
 import sofTodo.toDoList.service.RandomMissionService;
@@ -27,7 +26,7 @@ public class RandomMissionScheduler {
         this.toDoService = toDoService;
     }
 
-    @Scheduled(cron = "0 0 0 * * *") // 매일 자정에 실행
+    @Scheduled(cron = "0 57 15 * * *")
     public void addRandomMissionsToUsers() {
         List<RandomMission> missions = randomMissionService.findAll();
         List<User> users = userService.findAll();

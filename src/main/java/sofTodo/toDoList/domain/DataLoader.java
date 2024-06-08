@@ -3,6 +3,7 @@ package sofTodo.toDoList.domain;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import sofTodo.toDoList.domain.RandomMission;
 import sofTodo.toDoList.repository.RandomMissionRepository;
 
 import java.util.List;
