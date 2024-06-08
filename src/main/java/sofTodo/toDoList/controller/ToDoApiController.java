@@ -84,7 +84,6 @@ public class ToDoApiController {
         }
     }
 
-
     @DeleteMapping("/todo/{todoId}")
     public ResponseEntity<Void> deleteToDo(@PathVariable long todoId, Authentication authentication) {
         Long userId = extractUserId(authentication);
@@ -116,4 +115,6 @@ public class ToDoApiController {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }
+
+
 }

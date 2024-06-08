@@ -5,9 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import sofTodo.toDoList.domain.User;
 import sofTodo.toDoList.service.UserService;
 
@@ -36,7 +34,20 @@ public class UserController {
         } else {
             return ResponseEntity.badRequest().build();
         }
+    }
+    @PostMapping("/{slug}/increment-mission-success")
+    public ResponseEntity<Void> incrementMissionSuccessCount(@PathVariable String slug) {
+        User user = userService.findBySlug(slug).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        System.out.println("Increment mission success for user " + user.getId()); // 로그 추가
+        userService.incrementMissionSuccessCount(user.getId());
+        return ResponseEntity.ok().build();
+    }
 
-
+    @PostMapping("/{slug}/decrement-mission-success")
+    public ResponseEntity<Void> decrementMissionSuccessCount(@PathVariable String slug) {
+        User user = userService.findBySlug(slug).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        System.out.println("Decrement mission success for user " + user.getId()); // 로그 추가
+        userService.decrementMissionSuccessCount(user.getId());
+        return ResponseEntity.ok().build();
     }
 }
