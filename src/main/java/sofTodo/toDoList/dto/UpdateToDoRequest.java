@@ -11,5 +11,5 @@ public class UpdateToDoRequest {
     private String content;
     private String date;
     private String color;
-    private boolean isChecked;
+    private boolean isRandomMission;
 }

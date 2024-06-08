@@ -1,4 +1,4 @@
-package sofTodo.toDoList.config;
+package sofTodo.toDoList.domain;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;

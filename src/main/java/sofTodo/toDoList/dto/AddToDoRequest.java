@@ -13,6 +13,7 @@ public class AddToDoRequest {
     private String content;
     private String date;
     private String color;
+    private boolean isRandomMission; // 새로운 필드 추가
 
     public ToDoItem toEntity(User user){
         return ToDoItem.builder()
@@ -20,6 +21,7 @@ public class AddToDoRequest {
                 .content(content)
                 .date(date)
                 .color(color)
+                .isRandomMission(isRandomMission) // 필드 초기화
                 .build();
     }
 }
