@@ -19,16 +19,23 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void save(AddUserRequest dto) {
+        // 닉네임 중복 체크
+        if (userRepository.existsByNickname(dto.getNickname())) {
+            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+        }
+
+        //아이디 중복 체크
+        if (userRepository.existsByUsername(dto.getUsername())) {
+            throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
+        }
+
+        // 비밀번호 암호화 및 사용자 저장
         userRepository.save(User.builder()
                 .nickname(dto.getNickname())
                 .username(dto.getUsername())
                 .password(bCryptPasswordEncoder.encode(dto.getPassword()))
                 .slug(generateSlug(dto.getNickname()))
                 .build());
-    }
-
-    public void save(User user) {
-        userRepository.save(user);
     }
 
     public Optional<User> findById(Long userId) {
