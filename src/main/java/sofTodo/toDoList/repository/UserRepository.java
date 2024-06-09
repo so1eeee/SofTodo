@@ -1,6 +1,8 @@
 package sofTodo.toDoList.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import sofTodo.toDoList.domain.User;
 
 import java.util.List;
@@ -17,4 +19,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     //아이디 중복 검사
     boolean existsByUsername(String username);
+
+    @Query("SELECT u FROM User u WHERE u.weeklyPartner.id = :partnerId")
+    List<User> findByWeeklyPartnerId(@Param("partnerId") Long partnerId);
 }

@@ -26,7 +26,7 @@ public class PartnerController {
             if (user != null && user.getWeeklyPartner() != null) {
                 return ResponseEntity.ok(new PartnerResponse(user.getWeeklyPartner()));
             }
-            return ResponseEntity.ok(null);
+            return ResponseEntity.ok(new PartnerResponse()); // 빈 객체 반환
         }
         return ResponseEntity.badRequest().build();
     }

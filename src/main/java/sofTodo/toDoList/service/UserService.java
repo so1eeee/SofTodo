@@ -6,6 +6,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import sofTodo.toDoList.domain.User;
 import sofTodo.toDoList.dto.AddUserRequest;
+import sofTodo.toDoList.repository.ToDoItemRepository;
 import sofTodo.toDoList.repository.UserRepository;
 
 import java.text.Normalizer;
@@ -18,6 +19,7 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final ToDoItemRepository toDoItemRepository;
 
     public void save(AddUserRequest dto) {
         // 닉네임 중복 체크
@@ -95,6 +97,28 @@ public class UserService {
 
     public Optional<User> findPartnerByUserSlug(String slug) {
         return userRepository.findBySlug(slug).map(User::getWeeklyPartner);
+    }
+
+    @Transactional
+    public void deleteUserById(Long userId) {
+
+        toDoItemRepository.deleteByUserId(userId);
+
+        // 주간 파트너 관계를 해제
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        user.setWeeklyPartner(null);
+        userRepository.save(user);
+
+        userRepository.deleteById(userId);
+    }
+
+    @Transactional
+    public void nullifyPartnersForUser(Long userId) {
+        List<User> usersWithPartner = userRepository.findByWeeklyPartnerId(userId);
+        for (User user : usersWithPartner) {
+            user.setWeeklyPartner(null);
+            userRepository.save(user);
+        }
     }
 }
 
