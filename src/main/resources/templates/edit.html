@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link href="/main.css" rel="stylesheet">
+    <title>회원 정보 수정</title>
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 600px;
+        }
+        .card {
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+            width: 400px;
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .edit-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #000;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        .form-label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .btn-custom {
+            width: 100%;
+            padding: 10px;
+            background-color: #3C5E2C;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .btn-custom:hover {
+            background-color: #344f26;
+        }
+        .custom-margin {
+            margin-top: 10px;
+        }
+        .text-secondary {
+            color: #6c757d;
+            text-decoration: none;
+        }
+        .text-secondary:hover {
+            text-decoration: underline;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="nav" th:replace="~{nav.html::navbar}"></div>
+
+<section>
+    <div class="container">
+        <div class="edit-title">회원 정보 수정</div>
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{/user/update-nickname}" th:object="${user}" method="post" style="width: 100%;">
+                    <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}">
+                    <div class="form-group">
+                        <label class="form-label">새 닉네임</label>
+                        <input type="text" placeholder="새 닉네임 입력" class="form-control" th:field="*{nickname}" required>
+                        <div th:if="${nicknameError}" class="error-message" th:text="${nicknameError}"></div>
+                    </div>
+                    <button type="submit" class="btn-custom">닉네임 변경</button>
+                </form>
+                <div class="mt-3 custom-margin">
+                    <a href="/" class="text-secondary">홈으로 돌아가기</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

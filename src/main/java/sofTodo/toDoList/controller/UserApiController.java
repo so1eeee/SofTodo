@@ -4,7 +4,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import sofTodo.toDoList.domain.User;
 import sofTodo.toDoList.dto.AddUserRequest;
 import sofTodo.toDoList.repository.UserRepository;
 import sofTodo.toDoList.service.UserService;
@@ -50,6 +54,42 @@ public class UserApiController {
             return "signup";
         }
 
+        return "redirect:/login";
+    }
+
+    @GetMapping("/edit")
+    public String showEditPage(Model model, Authentication authentication) {
+        if (authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            User user = userService.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+            model.addAttribute("user", user);
+            return "edit";
+        }
+        return "redirect:/";
+    }
+
+    @PostMapping("/user/update-nickname")
+    public String updateNickname(@RequestParam("nickname") String nickname, Model model, Authentication authentication) {
+        if (authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String username = userDetails.getUsername();
+            try {
+                userService.updateNickname(username, nickname);
+
+                // 사용자 정보를 세션에 저장하고 업데이트
+                User updatedUser = userService.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                        updatedUser, null, updatedUser.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+                return "redirect:/my-page";
+            } catch (IllegalArgumentException e) {
+                model.addAttribute("nicknameError", e.getMessage());
+                User user = userService.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                model.addAttribute("user", user);
+                return "edit";
+            }
+        }
         return "redirect:/login";
     }
 

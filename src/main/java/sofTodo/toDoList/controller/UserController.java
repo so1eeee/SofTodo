@@ -52,8 +52,9 @@ public class UserController {
     public ResponseEntity<Boolean> checkUsername(@RequestParam String username) {
         boolean exists = userRepository.existsByUsername(username);
         return ResponseEntity.ok(exists);
-      
-    @PostMapping("/{slug}/increment-mission-success")
+    }
+
+    @PostMapping("/user/{slug}/increment-mission-success")
     public ResponseEntity<Void> incrementMissionSuccessCount(@PathVariable String slug) {
         User user = userService.findBySlug(slug).orElseThrow(() -> new IllegalArgumentException("User not found"));
         System.out.println("Increment mission success for user " + user.getId()); // 로그 추가
@@ -61,7 +62,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{slug}/decrement-mission-success")
+    @PostMapping("/user/{slug}/decrement-mission-success")
     public ResponseEntity<Void> decrementMissionSuccessCount(@PathVariable String slug) {
         User user = userService.findBySlug(slug).orElseThrow(() -> new IllegalArgumentException("User not found"));
         System.out.println("Decrement mission success for user " + user.getId()); // 로그 추가

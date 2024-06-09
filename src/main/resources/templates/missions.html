@@ -3,8 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <title>랜덤미션</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
     <link href="/main.css" rel="stylesheet">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+        .list-group {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .list-group-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f1f1f1;
+            border: 1px solid #dddddd;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        .list-group-item:hover {
+            background-color: #e2e2e2;
+        }
+    </style>
 </head>
 <body>
 <div th:replace="~{nav.html::navbar}"></div>
