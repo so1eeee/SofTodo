@@ -53,7 +53,7 @@ public class UserController {
         boolean exists = userRepository.existsByUsername(username);
         return ResponseEntity.ok(exists);
     }
-      
+
     @PostMapping("/user/{slug}/increment-mission-success")
     public ResponseEntity<Void> incrementMissionSuccessCount(@PathVariable String slug) {
         User user = userService.findBySlug(slug).orElseThrow(() -> new IllegalArgumentException("User not found"));
