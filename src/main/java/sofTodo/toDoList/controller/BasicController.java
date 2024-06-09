@@ -7,7 +7,6 @@ import sofTodo.toDoList.dto.AddUserRequest;
 
 @Controller
 public class BasicController {
-
     //사이트 기본 홈페이지(로그인 안했을시)
     @GetMapping("/hello")
     public String hello() {
