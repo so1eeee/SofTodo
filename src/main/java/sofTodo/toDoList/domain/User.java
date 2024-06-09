@@ -25,7 +25,7 @@ public class User implements UserDetails{
     @Column(name="nickname", unique = true)
     private String nickname;
 
-    @Column(name="username", unique = true)
+    @Column(name="username")
     private String username;
 
     @Column(name="password")
@@ -39,6 +39,12 @@ public class User implements UserDetails{
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<ToDoItem> todoItems;
+
+    @ManyToOne
+    @JoinColumn(name = "weekly_partner_id")
+    @JsonIgnore
+    private User weeklyPartner;
+
 
     public User(Long id, String username, String password, String slug) {
         this.id = id;

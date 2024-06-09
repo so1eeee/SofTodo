@@ -17,16 +17,16 @@ import java.util.Optional;
 public class GuestBookService {
     private final GuestBookRepository guestBookRepository;
 
-    public GuestBook saveGuestBook(AddGuestBookRequest request, User user) {
-        return guestBookRepository.save(request.toEntity(user));
+    public GuestBook saveGuestBook(AddGuestBookRequest request, User own_user ,User guest_user) {
+        return guestBookRepository.save(request.toEntity(own_user,guest_user));
     }
 
     public Optional<GuestBook> findById(long id) {
         return guestBookRepository.findById(id);
     }
 
-    public List<GuestBook> findByUserId(Long userId) {
-        return guestBookRepository.findByUserId(userId);
+    public List<GuestBook> findByOwnUserId(Long ownUserId) { // 주인찾기
+        return guestBookRepository.findByOwnUserId(ownUserId);
     }
 
     public void delete(long id) {
@@ -35,9 +35,12 @@ public class GuestBookService {
 
     @Transactional
     public GuestBook update(long id, UpdateGuestBookRequest request) {
-        GuestBook guestBook = guestBookRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
-        guestBook.update(request.getContent(),request.getDate());
-        return guestBook;
+        Optional<GuestBook> optionalGuestBook = guestBookRepository.findById(id);
+        if(optionalGuestBook.isPresent()) {
+            GuestBook guestBook = optionalGuestBook.get();
+            guestBook.update(request.getContent(), request.getDate());
+            return guestBook;
+        }
+        else return null;
     }
 }

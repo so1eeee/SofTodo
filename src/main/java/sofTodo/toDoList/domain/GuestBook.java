@@ -26,11 +26,16 @@ public class GuestBook {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore()
-    private User user;
+    private User ownUser;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore()
+    private User guestUser;
 
     @Builder
-    public GuestBook(User user,String content,String date) {
-        this.user = user;
+    public GuestBook(User ownUser,User guestUser, String content,String date) {
+        this.guestUser = guestUser;
+        this.ownUser = ownUser;
         this.content = content;
         this.date = date;
     }
@@ -38,5 +43,4 @@ public class GuestBook {
         this.content = content;
         this.date = date;
     }
-
 }
