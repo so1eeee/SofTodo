@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>계급에 대해서</title>
+    <link href="/main.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .container {
+            max-width: 800px;
+            height: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-top : 10px;
+            margin-bottom: 20px;
+        }
+        .rank-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 60px;
+        }
+        .rank-section i {
+            font-size: 3rem;
+            margin-right: 15px;
+        }
+        .rank-description {
+            font-size: 1.1rem;
+            color: #333;
+        }
+        .fa-seedling {
+            color: darkgreen;
+        }
+        .fa-leaf {
+            color: darkgreen;
+        }
+        .fa-tree {
+            color: darkgreen;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{nav.html::navbar}"></div>
+
+<div class="container">
+    <div class="title">계급</div>
+    <div class="rank-section">
+        <i class="fa-solid fa-seedling"></i>
+        <div class="rank-description">
+            <strong>씨앗 단계</strong>: 랜덤 미션 성공 횟수가 10회 미만일 경우에 해당하는 계급입니다. 이 단계에서는 기본적인 미션을 수행하면서 성장의 기초를 다집니다.
+        </div>
+    </div>
+    <div class="rank-section">
+        <i class="fa-solid fa-leaf"></i>
+        <div class="rank-description">
+            <strong>잎새 단계</strong>: 랜덤 미션 성공 횟수가 10회 이상 20회 미만일 경우에 해당하는 계급입니다. 이 단계에서는 더 많은 도전과제를 통해 더 큰 성장을 이룹니다.
+        </div>
+    </div>
+    <div class="rank-section">
+        <i class="fa-solid fa-tree"></i>
+        <div class="rank-description">
+            <strong>나무 단계</strong>: 랜덤 미션 성공 횟수가 20회 이상일 경우에 해당하는 계급입니다. 이 단계에서는 모든 도전과제를 성공적으로 수행한 우수한 참여자로 인정받습니다.
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

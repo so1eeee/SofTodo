@@ -26,8 +26,8 @@ public class BasicController {
         return "/signup";
     }
 
-    @GetMapping("/my-page")
-    public String mypage() {
-        return "mypage";
+    @GetMapping("/aboutRank")
+    public String aboutRank(){
+        return "/aboutRank";
     }
 }
