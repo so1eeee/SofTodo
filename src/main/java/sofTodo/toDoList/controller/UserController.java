@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import sofTodo.toDoList.domain.User;
 import sofTodo.toDoList.repository.UserRepository;
 import sofTodo.toDoList.service.UserService;
@@ -39,7 +40,6 @@ public class UserController {
             return ResponseEntity.badRequest().build();
         }
     }
-
     //닉네임 중복 검사
     @GetMapping("/api/check-nickname")
     public ResponseEntity<Boolean> checkNickname(@RequestParam String nickname) {
@@ -52,5 +52,20 @@ public class UserController {
     public ResponseEntity<Boolean> checkUsername(@RequestParam String username) {
         boolean exists = userRepository.existsByUsername(username);
         return ResponseEntity.ok(exists);
+      
+    @PostMapping("/{slug}/increment-mission-success")
+    public ResponseEntity<Void> incrementMissionSuccessCount(@PathVariable String slug) {
+        User user = userService.findBySlug(slug).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        System.out.println("Increment mission success for user " + user.getId()); // 로그 추가
+        userService.incrementMissionSuccessCount(user.getId());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{slug}/decrement-mission-success")
+    public ResponseEntity<Void> decrementMissionSuccessCount(@PathVariable String slug) {
+        User user = userService.findBySlug(slug).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        System.out.println("Decrement mission success for user " + user.getId()); // 로그 추가
+        userService.decrementMissionSuccessCount(user.getId());
+        return ResponseEntity.ok().build();
     }
 }

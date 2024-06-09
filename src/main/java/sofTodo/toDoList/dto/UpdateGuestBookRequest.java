@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class UpdateToDoRequest {
+public class UpdateGuestBookRequest {
     private String content;
     private String date;
-    private String color;
-    private boolean isRandomMission;
 }
