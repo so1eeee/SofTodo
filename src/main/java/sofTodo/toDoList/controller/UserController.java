@@ -1,6 +1,7 @@
 package sofTodo.toDoList.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,6 +38,20 @@ public class UserController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @DeleteMapping("/user")
+    public ResponseEntity<Void> deleteUser(Authentication authentication) {
+        Long userId = extractUserId(authentication);
+
+        if (userId != null) {
+            // 삭제하기 전에 해당 사용자가 파트너로 설정된 모든 사용자들의 파트너 관계를 해제
+            userService.nullifyPartnersForUser(userId);
+            userService.deleteUserById(userId);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
     //닉네임 중복 검사
     @GetMapping("/api/check-nickname")
     public ResponseEntity<Boolean> checkNickname(@RequestParam String nickname) {
@@ -65,5 +80,17 @@ public class UserController {
         System.out.println("Decrement mission success for user " + user.getId()); // 로그 추가
         userService.decrementMissionSuccessCount(user.getId());
         return ResponseEntity.ok().build();
+    }
+
+    private Long extractUserId(Authentication authentication) {
+        if (authentication.getPrincipal() instanceof DefaultOAuth2User) {
+            DefaultOAuth2User oauthUser = (DefaultOAuth2User) authentication.getPrincipal();
+            String email = (String) oauthUser.getAttributes().get("email");
+            return userService.findByUsername(email).map(User::getId).orElse(null);
+        } else if (authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            return userService.findByUsername(userDetails.getUsername()).map(User::getId).orElse(null);
+        }
+        return null;
     }
 }
