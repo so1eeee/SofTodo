@@ -38,7 +38,7 @@ public class ToDoServiceImpl {
     public ToDoItem update(long id, UpdateToDoRequest request) {
         ToDoItem toDoItem = toDoItemRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
-        toDoItem.update(request.getContent(),request.getDate(),request.getColor(), request.isRandomMission());
+        toDoItem.update(request.getContent(), request.getDate(), request.getColor(), request.isRandomMission());
         return toDoItem;
     }
 }
