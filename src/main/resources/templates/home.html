@@ -269,7 +269,7 @@
                     .then(response => response.json())
                     .then(partner => {
                         const partnerInfoEl = document.getElementById('partner-info');
-                        if (partner) {
+                        if (partner && partner.nickname && partner.slug) {
                             partnerInfoEl.innerHTML = `이번 주 파트너! : <a id="partner-link" href="/home/${partner.slug}">${partner.nickname}</a>`;
                         } else {
                             partnerInfoEl.innerHTML = "아직 파트너가 없어요!";
@@ -277,8 +277,10 @@
                     })
                     .catch(error => {
                         console.error('Error fetching partner info:', error);
+                        document.getElementById('partner-info').innerHTML = "아직 파트너가 없어요!";
                     });
             }
+
 
             function initCalendar(ownSlug) {
                 fetch(`/todo/${ownSlug}`)
