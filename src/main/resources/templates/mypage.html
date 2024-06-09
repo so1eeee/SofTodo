@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -26,6 +25,9 @@
             margin-bottom: 20px;
             color: #000;
         }
+        .nickname i{
+            color: indianred;
+        }
         .card {
             display: flex;
             justify-content: space-around;
@@ -42,8 +44,13 @@
         }
         .item i {
             font-size: 3rem; /* 아이콘 크기 조절 */
-            color: #FFD700; /* Optional: 아이콘 색상 변경 */
             margin-bottom: 10px;
+        }
+        .crown-icon {
+            color: #FFD700; /* 노란색 */
+        }
+        .tree-icon {
+            color: darkgreen; /* 초록색 */
         }
         .item .title {
             font-size: 1.2rem;
@@ -51,9 +58,19 @@
             color: #000;
             margin-bottom: 5px;
         }
-        .item .subtitle {
-            font-size: 0.9rem;
-            color: #6c757d;
+        .rank {
+            color: darkgreen;
+        }
+        .aboutRank {
+            color: darkgreen;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+        .aboutRank:hover {
+            text-decoration: underline;
+            color: darkolivegreen;
         }
     </style>
 </head>
@@ -66,12 +83,20 @@
         <span th:if="${#authentication.principal != null}">
             <span th:text="${#authentication.principal.nickname} + '님'"></span>
         </span>
+        <i class="fa-solid fa-heart heart"></i>
     </div>
     <div class="card">
         <div class="item">
-            <i class="fa-solid fa-crown"></i>
+            <i class="fa-solid fa-crown crown-icon"></i>
             <div class="title">랜덤 미션 성공 횟수</div>
-            <div class="title" th:text="${#authentication.principal.missionSuccessCount} + '회'">10회</div>
+            <div class="title" th:text="${user.missionSuccessCount} + '회'">??회</div>
+        </div>
+        <div class="item">
+            <i class="fa-solid fa-seedling rank" th:if="${user.missionSuccessCount < 10}"></i>
+            <i class="fa-solid fa-leaf rank" th:if="${user.missionSuccessCount >= 10 and user.missionSuccessCount < 20}"></i>
+            <i class="fa-solid fa-tree tree-icon rank" th:if="${user.missionSuccessCount >= 20}"></i>
+            <div class="title">현재 나의 계급</div>
+            <a href="/aboutRank" class="aboutRank">계급에 대해서 궁금하신가요?</a>
         </div>
     </div>
 </div>

@@ -87,4 +87,14 @@ public class UserViewController {
         User user = userService.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("User not found"));
         return ResponseEntity.ok(user);
     }
+
+    @GetMapping("/my-page")
+    public String showMyPage(Model model, Authentication authentication) {
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            User user = userService.findByUsername(userDetails.getUsername()).orElse(null);
+            model.addAttribute("user", user);
+        }
+        return "mypage";
+    }
 }
