@@ -1,5 +1,6 @@
 package sofTodo.toDoList.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -80,5 +81,17 @@ public class UserService {
         user.setMissionSuccessCount(user.getMissionSuccessCount() - 1);
         userRepository.save(user);
     }
+
+    @Transactional
+    public void updateNickname(String username, String newNickname) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        if (userRepository.existsByNickname(newNickname)) {
+            throw new IllegalArgumentException("닉네임이 이미 존재합니다.");
+        }
+        user.setNickname(newNickname);
+        userRepository.save(user);
+    }
+
 }
 

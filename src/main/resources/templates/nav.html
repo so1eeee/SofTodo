@@ -19,6 +19,7 @@
         <span th:if="${#authentication.principal != null}">
             <span th:text="${#authentication.principal.nickname} + '님'"></span>
         </span>
+        <a href="/edit">정보수정</a>
         <a href="/my-page">My-Page</a>
         <!--        로그인된 경우에 로그아웃을 표시-->
         <a  sec:authorize="isAuthenticated()" th:href="@{/user/logout}">로그아웃</a>
