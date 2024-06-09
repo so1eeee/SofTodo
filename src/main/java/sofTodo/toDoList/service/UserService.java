@@ -93,5 +93,8 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public Optional<User> findPartnerByUserSlug(String slug) {
+        return userRepository.findBySlug(slug).map(User::getWeeklyPartner);
+    }
 }
 

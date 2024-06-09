@@ -40,6 +40,12 @@ public class User implements UserDetails{
     @JsonIgnore
     private List<ToDoItem> todoItems;
 
+    @ManyToOne
+    @JoinColumn(name = "weekly_partner_id")
+    @JsonIgnore
+    private User weeklyPartner;
+
+
     public User(Long id, String username, String password, String slug) {
         this.id = id;
         this.username = username;

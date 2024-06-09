@@ -75,6 +75,9 @@ public class UserViewController {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             model.addAttribute("user", user);
+            if (user.getWeeklyPartner() != null) {
+                model.addAttribute("partner", user.getWeeklyPartner());
+            }
             return "home";
         } else {
             return "error"; // 슬러그에 해당하는 사용자를 찾을 수 없을 때 반환할 페이지
