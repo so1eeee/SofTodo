@@ -10,6 +10,7 @@ body {
     background-color: var(--primary-color);
     color: var(--secondary-color);
     font-family: var(--main-font);
+
 }
 .nav {
     display: flex;

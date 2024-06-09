@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -26,6 +25,9 @@
             margin-bottom: 20px;
             color: #000;
         }
+        .nickname i {
+            color: indianred;
+        }
         .card {
             display: flex;
             justify-content: space-around;
@@ -42,8 +44,13 @@
         }
         .item i {
             font-size: 3rem; /* 아이콘 크기 조절 */
-            color: #FFD700; /* Optional: 아이콘 색상 변경 */
             margin-bottom: 10px;
+        }
+        .crown-icon {
+            color: #FFD700; /* 노란색 */
+        }
+        .tree-icon {
+            color: darkgreen; /* 초록색 */
         }
         .item .title {
             font-size: 1.2rem;
@@ -51,9 +58,32 @@
             color: #000;
             margin-bottom: 5px;
         }
-        .item .subtitle {
-            font-size: 0.9rem;
-            color: #6c757d;
+        .rank {
+            color: darkgreen;
+        }
+        .aboutRank {
+            color: darkgreen;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+        .aboutRank:hover {
+            text-decoration: underline;
+            color: darkolivegreen;
+        }
+        .delete-account-button {
+            margin-top: 20px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .delete-account-button:hover {
+            background-color: #c82333;
         }
     </style>
 </head>
@@ -66,14 +96,54 @@
         <span th:if="${#authentication.principal != null}">
             <span th:text="${#authentication.principal.nickname} + '님'"></span>
         </span>
+        <i class="fa-solid fa-heart heart"></i>
     </div>
     <div class="card">
         <div class="item">
-            <i class="fa-solid fa-crown"></i>
+            <i class="fa-solid fa-crown crown-icon"></i>
             <div class="title">랜덤 미션 성공 횟수</div>
-            <div class="title" th:text="${#authentication.principal.missionSuccessCount} + '회'">10회</div>
+            <div class="title" th:text="${user.missionSuccessCount} + '회'">??회</div>
+        </div>
+        <div class="item">
+            <i class="fa-solid fa-seedling rank" th:if="${user.missionSuccessCount < 10}"></i>
+            <i class="fa-solid fa-leaf rank" th:if="${user.missionSuccessCount >= 10 and user.missionSuccessCount < 20}"></i>
+            <i class="fa-solid fa-tree tree-icon rank" th:if="${user.missionSuccessCount >= 20}"></i>
+            <div class="title">현재 나의 계급</div>
+            <a href="/aboutRank" class="aboutRank">계급에 대해서 궁금하신가요?</a>
         </div>
     </div>
+    <button class="delete-account-button" id="deleteAccountButton">회원 탈퇴</button>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteAccountButton = document.getElementById('deleteAccountButton');
+        deleteAccountButton.addEventListener('click', deleteUserAccount);
+
+        function deleteUserAccount() {
+            if (confirm('정말로 회원 탈퇴를 하시겠습니까?')) {
+                fetch('/user', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('회원 탈퇴가 완료되었습니다.');
+                            window.location.href = '/logout'; // 로그아웃 처리 후 메인 페이지로 리다이렉트
+                        } else {
+                            alert('회원 탈퇴에 실패하였습니다.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting account:', error);
+                        alert('회원 탈퇴 중 오류가 발생하였습니다.');
+                    });
+            }
+        }
+    });
+</script>
+
 </body>
 </html>

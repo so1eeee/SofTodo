@@ -1,10 +1,12 @@
 package sofTodo.toDoList.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import sofTodo.toDoList.domain.User;
 import sofTodo.toDoList.dto.AddUserRequest;
+import sofTodo.toDoList.repository.ToDoItemRepository;
 import sofTodo.toDoList.repository.UserRepository;
 
 import java.text.Normalizer;
@@ -17,18 +19,26 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final ToDoItemRepository toDoItemRepository;
 
     public void save(AddUserRequest dto) {
+        // 닉네임 중복 체크
+        if (userRepository.existsByNickname(dto.getNickname())) {
+            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+        }
+
+        //아이디 중복 체크
+        if (userRepository.existsByUsername(dto.getUsername())) {
+            throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
+        }
+
+        // 비밀번호 암호화 및 사용자 저장
         userRepository.save(User.builder()
                 .nickname(dto.getNickname())
                 .username(dto.getUsername())
                 .password(bCryptPasswordEncoder.encode(dto.getPassword()))
                 .slug(generateSlug(dto.getNickname()))
                 .build());
-    }
-
-    public void save(User user) {
-        userRepository.save(user);
     }
 
     public Optional<User> findById(Long userId) {
@@ -73,4 +83,42 @@ public class UserService {
         user.setMissionSuccessCount(user.getMissionSuccessCount() - 1);
         userRepository.save(user);
     }
+
+    @Transactional
+    public void updateNickname(String username, String newNickname) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        if (userRepository.existsByNickname(newNickname)) {
+            throw new IllegalArgumentException("닉네임이 이미 존재합니다.");
+        }
+        user.setNickname(newNickname);
+        userRepository.save(user);
+    }
+
+    public Optional<User> findPartnerByUserSlug(String slug) {
+        return userRepository.findBySlug(slug).map(User::getWeeklyPartner);
+    }
+
+    @Transactional
+    public void deleteUserById(Long userId) {
+
+        toDoItemRepository.deleteByUserId(userId);
+
+        // 주간 파트너 관계를 해제
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        user.setWeeklyPartner(null);
+        userRepository.save(user);
+
+        userRepository.deleteById(userId);
+    }
+
+    @Transactional
+    public void nullifyPartnersForUser(Long userId) {
+        List<User> usersWithPartner = userRepository.findByWeeklyPartnerId(userId);
+        for (User user : usersWithPartner) {
+            user.setWeeklyPartner(null);
+            userRepository.save(user);
+        }
+    }
 }
+

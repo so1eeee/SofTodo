@@ -175,8 +175,6 @@
             margin-bottom: 10px; /* 아래 간격 추가 */
         }
 
-
-
     </style>
 
     <script th:inline="javascript">
@@ -198,8 +196,6 @@
             const ownSlug = window.location.pathname.split('/').pop();
             const modal = document.getElementById("eventModal");
 
-            addGuestBookButton.addEventListener('click', AddGuestBook);
-
             fetch(`/user`)
                 .then(response => {
                     if (!response.ok) {
@@ -209,6 +205,35 @@
                 })
                 .then(user => {
                     currentUser = user;
+
+                    // 서버에서 전달된 사용자 정보를 사용하여 닉네임 설정
+                    const ownerNickname = document.getElementById('user-todo').dataset.nickname;
+                    document.getElementById('user-todo').textContent = `${ownerNickname}의 todo`;
+
+                    // 소유자인지 여부 확인
+                    isOwner = (slug === currentUser.slug);
+
+                    // 파트너 정보 설정 (소유자인 경우에만 표시)
+                    const partnerInfoEl = document.getElementById('partner-info');
+                    if (isOwner) {
+                        fetch(`/partner/${currentUser.slug}`)
+                            .then(response => response.json())
+                            .then(partner => {
+                                console.log('Partner:', partner); // 파트너 정보 확인을 위해 콘솔에 로그 추가
+                                if (partner && partner.nickname) {
+                                    partnerInfoEl.innerHTML = `이번 주 파트너! : <a href="/home/${partner.slug}">${partner.nickname}</a>`;
+                                } else {
+                                    partnerInfoEl.innerHTML = "아직 파트너가 없어요!";
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error fetching partner info:', error);
+                                partnerInfoEl.innerHTML = "아직 파트너가 없어요!";
+                            });
+                    } else {
+                        partnerInfoEl.innerHTML = "";
+                    }
+
                     initCalendar(ownSlug);
                     initGuestBook(ownSlug); // initGuestBook 호출을 이곳으로 이동
                 })
@@ -258,7 +283,7 @@
                 window.addEventListener('click', windowClick);
                 document.addEventListener('keydown', handleKeyDown);
                 addEventButton.addEventListener('click', openModal); // 일정 추가 버튼 이벤트 리스너
-                submitBtn.addEventListener('click', () => handleSubmitEvent()); // eventId 없이 호출 (새 이벤트 추가)
+                submitBtn.addEventListener('click', handleSubmitEvent); // 새로운 이벤트 추가를 처리하는 함수
             }
 
             function openModal() {
@@ -304,11 +329,13 @@
                     const entryDiv = document.createElement('div');
                     entryDiv.className = 'guestbook-entry';
                     entryDiv.innerHTML = `
+                    
                 <p>닉네임: ${entry.nickname}</p>
                 <p>내용: ${entry.content}</p>
                 <p>날짜: ${entry.date}</p>
             `;
                     // 수정 버튼
+
                     const editButton = document.createElement('button');
                     editButton.textContent = '수정';
                     editButton.addEventListener('click', () => openGuestbookModal(entry.id, entry.content));
@@ -342,6 +369,7 @@
                     };
 
                     fetch(`/guestBook/${ownSlug}`, {
+                    fetch('/todo', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -583,6 +611,7 @@
                 modal.style.display = "block";
 
                 const submitBtn = document.getElementById("submitEvent");
+
                 submitBtn.removeEventListener('click', handleSubmitEvent);
                 submitBtn.addEventListener('click', () => handleSubmitEvent(eventId));
             }
@@ -597,6 +626,53 @@
             function closeGuestbookModal() {
                 console.log("Closing guestbook modal");
                 guestbookModal.style.display = "none";
+            }
+
+            function handleEditEventSubmission(eventId) {
+                const eventTitle = document.getElementById("eventTitle").value;
+                const eventDate = document.getElementById("eventDate").value;
+                const eventColor = document.getElementById("eventColor").value;
+
+                if (eventTitle && eventDate) {
+                    const requestData = {
+                        content: eventTitle,
+                        date: eventDate,
+                        color: eventColor
+                    };
+
+                    console.log('PUT!!!!!!'); // 디버깅용 콘솔 로그
+
+                    fetch(`/todo/${eventId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestData)
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            const event = calendar.getEventById(eventId);
+                            if (event) {
+                                event.setProp('title', data.content);
+                                event.setStart(data.date);
+                                event.setProp('backgroundColor', data.color);
+                                event.setExtendedProp('isRandomMission', data.randomMission); // isRandomMission 갱신
+                            }
+                            updateSidebar(eventDate);
+                            closeModal();
+                            clearForm();
+                        })
+                        .catch(error => {
+                            console.error('Error editing event:', error);
+                        });
+                } else {
+                    alert("제목을 입력해주세요.");
+                }
             }
 
             submitGuestbookEditButton.addEventListener('click', () => {
@@ -631,6 +707,10 @@
 </head>
 <body>
 <div th:replace="~{nav.html::navbar}"></div>
+<h2 id="user-todo" th:data-nickname="${user.nickname}">
+    [[${user.nickname}]]의 todo
+</h2>
+<div class="partner-box" id="partner-info"></div>
 <div id='calendar'></div>
 <div id="container">
     <div id="sidebar">

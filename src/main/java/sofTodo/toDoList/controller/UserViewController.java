@@ -75,6 +75,9 @@ public class UserViewController {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             model.addAttribute("user", user);
+            if (user.getWeeklyPartner() != null) {
+                model.addAttribute("partner", user.getWeeklyPartner());
+            }
             return "home";
         } else {
             return "error"; // 슬러그에 해당하는 사용자를 찾을 수 없을 때 반환할 페이지
@@ -86,5 +89,15 @@ public class UserViewController {
         String username = authentication.getName();
         User user = userService.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("User not found"));
         return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/my-page")
+    public String showMyPage(Model model, Authentication authentication) {
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            User user = userService.findByUsername(userDetails.getUsername()).orElse(null);
+            model.addAttribute("user", user);
+        }
+        return "mypage";
     }
 }
