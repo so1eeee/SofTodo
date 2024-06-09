@@ -4,6 +4,7 @@
     <link href="/main.css" rel="stylesheet">
     <meta charset='utf-8' />
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Font Awesome 추가 -->
     <style>
         /* 모달 스타일 */
         .modal {
@@ -104,7 +105,7 @@
             overflow-y: auto;
         }
 
-        #addEventButton{
+        #addEventButton,#addGuestBookButton{
             width: 50%;
             font-size: 16px;
             display: block;
@@ -126,6 +127,10 @@
             width: 25px; /* 체크박스 크기 조정 */
             height: 25px;
             margin-left: auto; /* 오른쪽으로 이동 */
+        }
+        .event-item.button { /* 수정/삭제 버튼 스타일 */
+            display: flex;
+            margin-top: 0;
         }
         #calendar {
             width: 57%;
@@ -174,8 +179,19 @@
             border-radius: 10px; /* 모서리 둥글게 */
             margin-bottom: 10px; /* 아래 간격 추가 */
         }
+        .rank {
+            margin-left: 10px; /* 아이콘과 텍스트 사이의 간격 */
+            font-size: 1.5rem; /* 아이콘 크기 */
+            color: green; /* 기본 아이콘 색상 */
+        }
+        .tree-icon {
+            color: darkgreen; /* 나무 아이콘 색상 */
+        }
+
+
 
     </style>
+
 
     <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function() {
@@ -194,7 +210,11 @@
             let currentUser;
             let isOwner = false; // 현재 사용자가 소유자인지 여부를 나타내는 변수
             const ownSlug = window.location.pathname.split('/').pop();
+            const slug = window.location.pathname.split('/').pop(); // URL에서 slug 추출
             const modal = document.getElementById("eventModal");
+            const submitBtn = document.getElementById("submitEvent");
+
+            addGuestBookButton.addEventListener('click', AddGuestBook);
 
             fetch(`/user`)
                 .then(response => {
@@ -205,41 +225,60 @@
                 })
                 .then(user => {
                     currentUser = user;
+                    isOwner = (slug === currentUser.slug); // 현재 사용자가 소유자인지 확인
 
-                    // 서버에서 전달된 사용자 정보를 사용하여 닉네임 설정
-                    const ownerNickname = document.getElementById('user-todo').dataset.nickname;
-                    document.getElementById('user-todo').textContent = `${ownerNickname}의 todo`;
-
-                    // 소유자인지 여부 확인
-                    isOwner = (slug === currentUser.slug);
-
-                    // 파트너 정보 설정 (소유자인 경우에만 표시)
-                    const partnerInfoEl = document.getElementById('partner-info');
                     if (isOwner) {
-                        fetch(`/partner/${currentUser.slug}`)
-                            .then(response => response.json())
-                            .then(partner => {
-                                console.log('Partner:', partner); // 파트너 정보 확인을 위해 콘솔에 로그 추가
-                                if (partner && partner.nickname) {
-                                    partnerInfoEl.innerHTML = `이번 주 파트너! : <a href="/home/${partner.slug}">${partner.nickname}</a>`;
-                                } else {
-                                    partnerInfoEl.innerHTML = "아직 파트너가 없어요!";
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error fetching partner info:', error);
-                                partnerInfoEl.innerHTML = "아직 파트너가 없어요!";
-                            });
-                    } else {
-                        partnerInfoEl.innerHTML = "";
+                        initPartnerInfo(currentUser, slug); // 소유자인 경우에만 파트너 정보 초기화
+                        initRankInfo(currentUser); // 사용자 랭크 정보 초기화
                     }
-
                     initCalendar(ownSlug);
                     initGuestBook(ownSlug); // initGuestBook 호출을 이곳으로 이동
                 })
                 .catch(error => {
                     console.error('Error fetching user:', error);
                 });
+
+            function initRankInfo(user) {
+                const userTodoElement = document.getElementById('user-todo');
+                const nickname = user.nickname;
+
+                // 기존 텍스트 내용
+                const todoText = `${nickname}의 todo`;
+
+                // 아이콘 추가
+                let iconHTML = '';
+                if (user.missionSuccessCount < 10) {
+                    iconHTML = '<i class="fa-solid fa-seedling rank"></i>';
+                } else if (user.missionSuccessCount >= 10 && user.missionSuccessCount < 20) {
+                    iconHTML = '<i class="fa-solid fa-leaf rank"></i>';
+                } else if (user.missionSuccessCount >= 20) {
+                    iconHTML = '<i class="fa-solid fa-tree tree-icon rank"></i>';
+                }
+
+                // 아이콘과 텍스트를 함께 설정
+                userTodoElement.innerHTML = `${iconHTML} ${todoText}`;
+            }
+
+            function initPartnerInfo(user, slug) {
+                // 사용자 닉네임 설정
+                const ownerNickname = document.getElementById('user-todo').dataset.nickname;
+                document.getElementById('user-todo').textContent = `${ownerNickname}의 todo`;
+
+                // 파트너 정보 설정
+                fetch(`/partner/${slug}`)
+                    .then(response => response.json())
+                    .then(partner => {
+                        const partnerInfoEl = document.getElementById('partner-info');
+                        if (partner) {
+                            partnerInfoEl.innerHTML = `이번 주 파트너! : <a id="partner-link" href="/home/${partner.slug}">${partner.nickname}</a>`;
+                        } else {
+                            partnerInfoEl.innerHTML = "아직 파트너가 없어요!";
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching partner info:', error);
+                    });
+            }
 
             function initCalendar(ownSlug) {
                 fetch(`/todo/${ownSlug}`)
@@ -277,19 +316,120 @@
                     });
 
                 const span = document.querySelector(".close");
-                const submitBtn = document.getElementById("submitEvent");
 
                 span.addEventListener('click', closeModal);
                 window.addEventListener('click', windowClick);
                 document.addEventListener('keydown', handleKeyDown);
-                addEventButton.addEventListener('click', openModal); // 일정 추가 버튼 이벤트 리스너
-                submitBtn.addEventListener('click', handleSubmitEvent); // 새로운 이벤트 추가를 처리하는 함수
+                addEventButton.addEventListener('click', openNewEventModal); // 일정 추가 버튼 이벤트 리스너
             }
 
-            function openModal() {
+            function openNewEventModal() {
                 if (!isOwner) return; // 소유자가 아닌 경우 모달을 열지 않음
+                document.getElementById('eventTitle').value = '';
                 document.getElementById('eventDate').value = currentSelectedDate;
+                document.getElementById('eventColor').value = '#FEDD40';
+                submitBtn.textContent = '추가';
+                submitBtn.onclick = handleNewEventSubmit;
                 modal.style.display = "block";
+            }
+
+            function openEditEventModal(eventId, event) {
+                if (!isOwner) return;
+                document.getElementById('eventTitle').value = event.title;
+                document.getElementById('eventDate').value = event.startStr;
+                document.getElementById('eventColor').value = event.backgroundColor;
+                submitBtn.textContent = '수정';
+                submitBtn.onclick = () => handleEditEventSubmit(eventId);
+                modal.style.display = "block";
+            }
+
+            function handleNewEventSubmit() {
+                const eventTitle = document.getElementById("eventTitle").value;
+                const eventDate = document.getElementById("eventDate").value;
+                const eventColor = document.getElementById("eventColor").value;
+
+                if (eventTitle && eventDate) {
+                    const requestData = {
+                        content: eventTitle,
+                        date: eventDate,
+                        color: eventColor
+                    };
+
+                    fetch('/todo', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestData)
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            calendar.addEvent({
+                                id: data.id,
+                                title: data.content,
+                                start: data.date,
+                                color: data.color,
+                                extendedProps: { isRandomMission: data.randomMission }
+                            });
+                            updateSidebar(eventDate);
+                            closeModal();
+                            clearForm();
+                        })
+                        .catch(error => {
+                            console.error('Error adding event:', error);
+                        });
+                } else {
+                    alert("제목을 입력해주세요.");
+                }
+            }
+
+            function handleEditEventSubmit(eventId) {
+                const eventTitle = document.getElementById("eventTitle").value;
+                const eventDate = document.getElementById("eventDate").value;
+                const eventColor = document.getElementById("eventColor").value;
+
+                if (eventTitle && eventDate) {
+                    const requestData = {
+                        content: eventTitle,
+                        date: eventDate,
+                        color: eventColor
+                    };
+
+                    fetch(`/todo/${eventId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestData)
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            const event = calendar.getEventById(eventId);
+                            if (event) {
+                                event.setProp('title', data.content);
+                                event.setStart(data.date);
+                                event.setProp('backgroundColor', data.color);
+                                updateSidebar(eventDate);
+                                closeModal();
+                                clearForm();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error updating event:', error);
+                        });
+                } else {
+                    alert("제목을 입력해주세요.");
+                }
             }
 
             function closeModal() {
@@ -329,13 +469,11 @@
                     const entryDiv = document.createElement('div');
                     entryDiv.className = 'guestbook-entry';
                     entryDiv.innerHTML = `
-                    
                 <p>닉네임: ${entry.nickname}</p>
                 <p>내용: ${entry.content}</p>
                 <p>날짜: ${entry.date}</p>
             `;
                     // 수정 버튼
-
                     const editButton = document.createElement('button');
                     editButton.textContent = '수정';
                     editButton.addEventListener('click', () => openGuestbookModal(entry.id, entry.content));
@@ -369,7 +507,6 @@
                     };
 
                     fetch(`/guestBook/${ownSlug}`, {
-                    fetch('/todo', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -449,7 +586,7 @@
             function clearForm() {
                 document.getElementById("eventTitle").value = '';
                 document.getElementById("eventDate").value = '';
-                document.getElementById("eventColor").value = '';
+                document.getElementById("eventColor").value = '#FEDD40'; // 기본 색상 설정
             }
 
             function handleDateClick(info) {
@@ -470,37 +607,26 @@
                 events.forEach(event => {
                     const eventEl = document.createElement('div');
                     eventEl.className = 'event-item';
+                    eventEl.textContent = event.title;
                     eventEl.style.borderLeft = `15px solid ${event.backgroundColor}`;
-
-                    const container = document.createElement('div');
-                    container.style.display= "flex";
-                    container.style.width ="100%";
-                    container.style.justifyContent = "space-between";
-                    eventEl.appendChild(container);
 
                     if (event.extendedProps.isRandomMission) {
                         eventEl.classList.add('random-mission');
                     }
-                    const text = document.createElement('div');
-                    text.textContent = event.title;
-                    container.appendChild(text);
-
 
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
-                    checkbox.id = `checkbox_${event.id}`; // Add unique ID
-                    checkbox.name = `checkbox_${event.id}`; // Add unique name
+                    checkbox.id = `checkbox_${event.id}`;
+                    checkbox.name = `checkbox_${event.id}`;
 
-                    // 로컬 스토리지에서 체크박스 상태 불러오기
                     checkbox.checked = getCheckboxState(event.id);
 
-                    // 소유자가 아닌 경우 체크박스를 비활성화
                     if (!isOwner) {
                         checkbox.disabled = true;
                     }
 
                     checkbox.addEventListener('change', () => {
-                        if (!isOwner) return; // 소유자가 아닌 경우 체크박스를 변경할 수 없음
+                        if (!isOwner) return;
                         saveCheckboxState(event.id, checkbox.checked);
                         const isRandomMission = event.extendedProps.isRandomMission;
                         console.log(`Checkbox for event ${event.id} changed to ${checkbox.checked}. isRandomMission: ${isRandomMission}`);
@@ -517,14 +643,11 @@
                             }
                         }
                     });
-                    container.appendChild(checkbox);
+
+                    eventEl.appendChild(checkbox);
 
                     const buttonsContainer = document.createElement('div');
                     buttonsContainer.className = 'buttons';
-                    buttonsContainer.style.width = "100%";
-                    buttonsContainer.style.display = "flex";
-                    buttonsContainer.style.justifyContent = "flex-end";
-                    buttonsContainer.style.padding = "7px";
                     eventEl.appendChild(buttonsContainer);
 
                     if (isOwner && !event.extendedProps.isRandomMission) {
@@ -533,15 +656,12 @@
                         editButton.addEventListener('click', () => {
                             openEditEventModal(event.id, event);
                         });
-                        editButton.style.marginLeft="2px";
-                        editButton.style.background="#76818D"
                         buttonsContainer.appendChild(editButton);
-                    } // 수정
+                    }
 
                     if (isOwner) {
                         const deleteButton = document.createElement('button');
                         deleteButton.textContent = '삭제';
-                        deleteButton.style.background = "#76818D";
                         deleteButton.addEventListener('click', () => {
                             if (confirm('정말 삭제하시겠습니까?')) {
                                 const isRandomMission = event.extendedProps.isRandomMission;
@@ -552,7 +672,6 @@
                                         if (response.ok) {
                                             event.remove();
                                             eventEl.remove();
-                                            // 삭제 시 로컬 스토리지에서 체크박스 상태도 제거
                                             localStorage.removeItem(`checkbox_${event.id}`);
                                             if (isRandomMission) {
                                                 fetch(`/user/${currentUser.slug}/decrement-mission-success`, {
@@ -570,7 +689,6 @@
                         });
                         buttonsContainer.appendChild(deleteButton);
                     }
-
 
                     sidebarEventsEl.appendChild(eventEl);
                 });
@@ -603,18 +721,12 @@
                 highlightSelectedDate(currentSelectedDate);
             }
 
-            function openEditEventModal(eventId, event) {
-                if (!isOwner) return;
-                document.getElementById('eventTitle').value = event.title;
-                document.getElementById('eventDate').value = event.startStr;
-                document.getElementById('eventColor').value = event.backgroundColor;
-                modal.style.display = "block";
-
-                const submitBtn = document.getElementById("submitEvent");
-
-                submitBtn.removeEventListener('click', handleSubmitEvent);
-                submitBtn.addEventListener('click', () => handleSubmitEvent(eventId));
-            }
+            submitGuestbookEditButton.addEventListener('click', () => {
+                const guestbookId = guestbookIdInput.value;
+                const newContent = guestbookContentInput.value;
+                UpdateGuestBook(guestbookId, newContent);
+                closeGuestbookModal();
+            });
 
             function openGuestbookModal(guestbookId, content) {
                 console.log("Opening guestbook modal for ID:", guestbookId, "with content:", content);
@@ -627,60 +739,6 @@
                 console.log("Closing guestbook modal");
                 guestbookModal.style.display = "none";
             }
-
-            function handleEditEventSubmission(eventId) {
-                const eventTitle = document.getElementById("eventTitle").value;
-                const eventDate = document.getElementById("eventDate").value;
-                const eventColor = document.getElementById("eventColor").value;
-
-                if (eventTitle && eventDate) {
-                    const requestData = {
-                        content: eventTitle,
-                        date: eventDate,
-                        color: eventColor
-                    };
-
-                    console.log('PUT!!!!!!'); // 디버깅용 콘솔 로그
-
-                    fetch(`/todo/${eventId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(requestData)
-                    })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error(`HTTP error! status: ${response.status}`);
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            const event = calendar.getEventById(eventId);
-                            if (event) {
-                                event.setProp('title', data.content);
-                                event.setStart(data.date);
-                                event.setProp('backgroundColor', data.color);
-                                event.setExtendedProp('isRandomMission', data.randomMission); // isRandomMission 갱신
-                            }
-                            updateSidebar(eventDate);
-                            closeModal();
-                            clearForm();
-                        })
-                        .catch(error => {
-                            console.error('Error editing event:', error);
-                        });
-                } else {
-                    alert("제목을 입력해주세요.");
-                }
-            }
-
-            submitGuestbookEditButton.addEventListener('click', () => {
-                const guestbookId = guestbookIdInput.value;
-                const newContent = guestbookContentInput.value;
-                UpdateGuestBook(guestbookId, newContent);
-                closeGuestbookModal();
-            });
 
             document.addEventListener('keydown', function(event) {
                 if (event.key === "ArrowLeft") {
@@ -703,12 +761,14 @@
     </script>
 
 
-
 </head>
 <body>
 <div th:replace="~{nav.html::navbar}"></div>
 <h2 id="user-todo" th:data-nickname="${user.nickname}">
-    [[${user.nickname}]]의 todo
+<i class="fa-solid fa-seedling rank" th:if="${user.missionSuccessCount < 10}"></i>
+<i class="fa-solid fa-leaf rank" th:if="${user.missionSuccessCount >= 10 and user.missionSuccessCount < 20}"></i>
+<i class="fa-solid fa-tree tree-icon rank" th:if="${user.missionSuccessCount >= 20}"></i>
+[[${user.nickname}]]의 todo
 </h2>
 <div class="partner-box" id="partner-info"></div>
 <div id='calendar'></div>
@@ -760,8 +820,5 @@
         <button id="submitGuestbookEdit">수정</button>
     </div>
 </div>
-
-
-
 </body>
 </html>
