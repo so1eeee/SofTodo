@@ -18,4 +18,9 @@ public interface GuestBookRepository extends JpaRepository<GuestBook, Long> {
     @Modifying
     @Query("DELETE FROM GuestBook gb WHERE gb.guestUser.id = :userId")
     void deleteByGuestUserId(@Param("userId") Long userId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM GuestBook gb WHERE gb.ownUser.id = :ownUserId")
+    void deleteByOwnUserId(Long ownUserId);
 }
