@@ -471,28 +471,35 @@
                     const entryDiv = document.createElement('div');
                     entryDiv.className = 'guestbook-entry';
                     entryDiv.innerHTML = `
-                <p>닉네임: ${entry.nickname}</p>
-                <p>내용: ${entry.content}</p>
-                <p>날짜: ${entry.date}</p>
-            `;
-                    // 수정 버튼
-                    const editButton = document.createElement('button');
-                    editButton.textContent = '수정';
-                    editButton.addEventListener('click', () => openGuestbookModal(entry.id, entry.content));
-                    entryDiv.appendChild(editButton);
+            <p>닉네임: ${entry.nickname}</p>
+            <p>내용: ${entry.content}</p>
+            <p>날짜: ${entry.date}</p>
+        `;
 
-                    // 삭제 버튼
-                    const deleteButton = document.createElement('button');
-                    deleteButton.textContent = '삭제';
-                    deleteButton.addEventListener('click', () => {
-                        if (confirm('정말 삭제하시겠습니까?')) {
-                            DeleteGuestBook(entry.id);
-                        }
-                    });
-                    entryDiv.appendChild(deleteButton);
+                    console.log(`entry.userId: ${entry.userId}, currentUser.id: ${currentUser.id}`); // 비교를 위해 콘솔 출력
+
+                    if (entry.userId === currentUser.id) { // 현재 사용자와 작성자가 같은 경우
+                        // 수정 버튼
+                        const editButton = document.createElement('button');
+                        editButton.textContent = '수정';
+                        editButton.addEventListener('click', () => openGuestbookModal(entry.id, entry.content));
+                        entryDiv.appendChild(editButton);
+
+                        // 삭제 버튼
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = '삭제';
+                        deleteButton.addEventListener('click', () => {
+                            if (confirm('정말 삭제하시겠습니까?')) {
+                                DeleteGuestBook(entry.id);
+                            }
+                        });
+                        entryDiv.appendChild(deleteButton);
+                    }
+
                     guestbookEntries.appendChild(entryDiv);
                 });
             }
+
 
             function AddGuestBook() {
                 const today = new Date();
