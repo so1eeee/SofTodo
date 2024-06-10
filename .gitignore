@@ -38,9 +38,5 @@ out/
 
 
 
-### 직접 정의한 파일
-gradlew
-gradlew.bat
-settings.gradle
 
 /src/main/resources/application.properties
