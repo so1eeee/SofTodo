@@ -9,6 +9,7 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.web.bind.annotation.*;
 import sofTodo.toDoList.domain.User;
 import sofTodo.toDoList.repository.UserRepository;
+import sofTodo.toDoList.service.GuestBookService;
 import sofTodo.toDoList.service.UserService;
 
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ public class UserController {
     private final UserService userService;
     private final UserRepository userRepository;
     private final NicknameController nicknameController;
+    private final GuestBookService guestBookService;
 
     @GetMapping("/user")
     public ResponseEntity<User> getCurrentUser(Authentication authentication) {
@@ -44,6 +46,7 @@ public class UserController {
         Long userId = extractUserId(authentication);
 
         if (userId != null) {
+            guestBookService.deleteByOwnUserId(userId); // 먼저 관련된 GuestBook 레코드를 삭제
             // 삭제하기 전에 해당 사용자가 파트너로 설정된 모든 사용자들의 파트너 관계를 해제
             userService.nullifyPartnersForUser(userId);
             userService.deleteUserById(userId);

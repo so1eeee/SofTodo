@@ -40,6 +40,7 @@ public class GuestBookApiController {
         }
     }
 
+
     @PostMapping("/guestBook/{ownSlug}") // 등록
     public ResponseEntity<GuestBook> addGuestBook(@PathVariable String ownSlug, @RequestBody AddGuestBookRequest request, Authentication authentication) {
         Long userId = extractUserId(authentication); // 입력하는 사람 id

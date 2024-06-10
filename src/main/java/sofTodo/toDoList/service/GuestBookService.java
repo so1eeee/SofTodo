@@ -43,4 +43,8 @@ public class GuestBookService {
         }
         else return null;
     }
+
+    public void deleteByOwnUserId(Long ownUserId) {
+        guestBookRepository.deleteByOwnUserId(ownUserId);
+    }
 }

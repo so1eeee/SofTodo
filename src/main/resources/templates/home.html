@@ -161,6 +161,30 @@
             max-height: 56%;
         }
 
+        #sidebar-events {
+            overflow-y: auto;
+            max-height: 300px; /* 필요한 높이로 조정 */
+        }
+
+        #guestbook-entries {
+            overflow-y: auto;
+            max-height: 200px; /* 필요한 높이로 조정 */
+            padding: 10px;
+        }
+
+        .guestbook-entry {
+            border: 1px solid #888; /* 테두리 추가 */
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px; /* 항목 간 간격 추가 */
+            background-color: #f9f9f9; /* 배경색 추가 */
+        }
+
+        .guestbook-entry p {
+            margin: 5px 0; /* 텍스트 간의 간격 추가 */
+        }
+
+
         /* 스타일 추가 */
         .event-item.random-mission {
             background-color: rgba(255, 215, 0, 0.3); /* 임의의 배경색 설정 */
@@ -471,28 +495,35 @@
                     const entryDiv = document.createElement('div');
                     entryDiv.className = 'guestbook-entry';
                     entryDiv.innerHTML = `
-                <p>닉네임: ${entry.nickname}</p>
-                <p>내용: ${entry.content}</p>
-                <p>날짜: ${entry.date}</p>
-            `;
-                    // 수정 버튼
-                    const editButton = document.createElement('button');
-                    editButton.textContent = '수정';
-                    editButton.addEventListener('click', () => openGuestbookModal(entry.id, entry.content));
-                    entryDiv.appendChild(editButton);
+            <p>닉네임: ${entry.nickname}</p>
+            <p>내용: ${entry.content}</p>
+            <p>날짜: ${entry.date}</p>
+        `;
 
-                    // 삭제 버튼
-                    const deleteButton = document.createElement('button');
-                    deleteButton.textContent = '삭제';
-                    deleteButton.addEventListener('click', () => {
-                        if (confirm('정말 삭제하시겠습니까?')) {
-                            DeleteGuestBook(entry.id);
-                        }
-                    });
-                    entryDiv.appendChild(deleteButton);
+                    console.log(`entry.userId: ${entry.userId}, currentUser.id: ${currentUser.id}`); // 비교를 위해 콘솔 출력
+
+                    if (entry.userId === currentUser.id) { // 현재 사용자와 작성자가 같은 경우
+                        // 수정 버튼
+                        const editButton = document.createElement('button');
+                        editButton.textContent = '수정';
+                        editButton.addEventListener('click', () => openGuestbookModal(entry.id, entry.content));
+                        entryDiv.appendChild(editButton);
+
+                        // 삭제 버튼
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = '삭제';
+                        deleteButton.addEventListener('click', () => {
+                            if (confirm('정말 삭제하시겠습니까?')) {
+                                DeleteGuestBook(entry.id);
+                            }
+                        });
+                        entryDiv.appendChild(deleteButton);
+                    }
+
                     guestbookEntries.appendChild(entryDiv);
                 });
             }
+
 
             function AddGuestBook() {
                 const today = new Date();
