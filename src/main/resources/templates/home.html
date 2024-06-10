@@ -103,6 +103,7 @@
         }
         #sidebar-events{
             overflow-y: auto;
+            max-height: 300px;
         }
 
         #addEventButton,#addGuestBookButton{
@@ -133,10 +134,10 @@
             margin-top: 0;
         }
         #calendar {
-            width: 57%;
+            width: 55%;
             display: inline-block;
-            margin-left: 4%;
-            margin-top: 15px; /* 상단 간격 추가 */
+            margin-left: 7%;
+            margin-top: 5px; /* 상단 간격 추가 */
             margin-right: 10px;
         }
         .fc-daygrid-day.fc-day-today {
@@ -160,30 +161,6 @@
             margin-left : 3%;
             max-height: 56%;
         }
-
-        #sidebar-events {
-            overflow-y: auto;
-            max-height: 300px; /* 필요한 높이로 조정 */
-        }
-
-        #guestbook-entries {
-            overflow-y: auto;
-            max-height: 200px; /* 필요한 높이로 조정 */
-            padding: 10px;
-        }
-
-        .guestbook-entry {
-            border: 1px solid #888; /* 테두리 추가 */
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px; /* 항목 간 간격 추가 */
-            background-color: #f9f9f9; /* 배경색 추가 */
-        }
-
-        .guestbook-entry p {
-            margin: 5px 0; /* 텍스트 간의 간격 추가 */
-        }
-
 
         /* 스타일 추가 */
         .event-item.random-mission {
@@ -212,10 +189,47 @@
             color: darkgreen; /* 나무 아이콘 색상 */
         }
 
-
+        .guestbook-entry {
+            border: 1px solid #888; /* 테두리 추가 */
+            padding: 10px;
+            border-radius: 5px;
+            margin: 6px;
+            background-color: #f9f9f9; /* 배경색 추가 */
+        }
+        .guestbook-entry p {
+            margin: 5px 0; /* 텍스트 간의 간격 추가 */
+        }
+        #guestbook-entries {
+            overflow-y: auto;
+            max-height: 200px; /* 필요한 높이로 조정 */
+            padding: 10px;
+        }
+        #user-info-container {
+            display: flex;          /* Flexbox 레이아웃 적용 */
+            justify-content: space-between; /* 요소들을 좌우로 균등하게 배치 */
+            margin-top: 0;
+            margin-bottom : 1px;
+            align-items: flex-start;
+        }
+        .partner-box{
+            margin-right :10%;
+        }
+        #user-todo{
+        }
+        #guestbook-content{
+            margin: 1%;
+            width : 65%;
+        }
+        #partner-info {
+            margin-bottom: 10px;
+            margin-top: 0;
+            padding: 6px;
+            border: 2px solid green;
+            background-color: #1fab49;
+            border-radius: 4px; /* 테두리를 동그랗게 */
+        }
 
     </style>
-
 
     <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function() {
@@ -294,7 +308,7 @@
                     .then(partner => {
                         const partnerInfoEl = document.getElementById('partner-info');
                         if (partner && partner.nickname && partner.slug) {
-                            partnerInfoEl.innerHTML = `이번 주 파트너! : <a id="partner-link" href="/home/${partner.slug}">${partner.nickname}</a>`;
+                            partnerInfoEl.innerHTML = `<b>이번 주 파트너!</b> : <a id="partner-link" href="/home/${partner.slug}">${partner.nickname}</a>`;
                         } else {
                             partnerInfoEl.innerHTML = "아직 파트너가 없어요!";
                         }
@@ -494,36 +508,64 @@
                 guestbooks.forEach(entry => {
                     const entryDiv = document.createElement('div');
                     entryDiv.className = 'guestbook-entry';
-                    entryDiv.innerHTML = `
-            <p>닉네임: ${entry.nickname}</p>
-            <p>내용: ${entry.content}</p>
-            <p>날짜: ${entry.date}</p>
-        `;
+                    entryDiv.innerHTML = ``;
+                    const nameanddate = document.createElement('div');
+                    nameanddate.style.display="flex";
+                    nameanddate.style.justifyContent ="space-between";
+                    nameanddate.style.width = "100%";
+                    entryDiv.appendChild(nameanddate);
 
-                    console.log(`entry.userId: ${entry.userId}, currentUser.id: ${currentUser.id}`); // 비교를 위해 콘솔 출력
+                    const namebox = document.createElement('div');
+                    namebox.textContent = entry.nickname;
+                    namebox.style.fontsize = '20px';
+                    namebox.style.fontWeight = 'bold';
+                    namebox.style.verticalAlign = "top";
+                    namebox.style.textAlign ='center';
+                    nameanddate.appendChild(namebox);
 
-                    if (entry.userId === currentUser.id) { // 현재 사용자와 작성자가 같은 경우
+                    const datebox = document.createElement('div');
+                    datebox.style.fontStyle = 'italic';
+                    datebox.style.textAlign = 'right';
+                    datebox.style.color = 'grey';
+                    datebox.textContent = entry.date;
+                    nameanddate.appendChild(datebox);
+
+                    const contentbox = document.createElement('div');
+                    contentbox.style.padding = "2px 10px";
+                    contentbox.textContent = entry.content;
+                    entryDiv.appendChild(contentbox);
+
+                    const btns = document.createElement('div');
+                    btns.style.width = "100%";
+                    btns.style.display = "flex";
+                    btns.style.justifyContent = "flex-end";
+
+                    entryDiv.appendChild(btns);
+
+                    if (entry.userId === currentUser.id) {
                         // 수정 버튼
                         const editButton = document.createElement('button');
                         editButton.textContent = '수정';
                         editButton.addEventListener('click', () => openGuestbookModal(entry.id, entry.content));
-                        entryDiv.appendChild(editButton);
+                        editButton.style.marginRight = '2px';
+                        editButton.style.background="#4B4C57"
+                        btns.appendChild(editButton);
 
                         // 삭제 버튼
                         const deleteButton = document.createElement('button');
                         deleteButton.textContent = '삭제';
+                        deleteButton.style.background = "#4B4C57";
                         deleteButton.addEventListener('click', () => {
                             if (confirm('정말 삭제하시겠습니까?')) {
                                 DeleteGuestBook(entry.id);
                             }
                         });
-                        entryDiv.appendChild(deleteButton);
+                        btns.appendChild(deleteButton);
                     }
 
                     guestbookEntries.appendChild(entryDiv);
                 });
             }
-
 
             function AddGuestBook() {
                 const today = new Date();
@@ -640,26 +682,38 @@
                 events.forEach(event => {
                     const eventEl = document.createElement('div');
                     eventEl.className = 'event-item';
-                    eventEl.textContent = event.title;
                     eventEl.style.borderLeft = `15px solid ${event.backgroundColor}`;
+
+                    const container = document.createElement('div');
+                    container.style.display= "flex";
+                    container.style.width ="100%";
+                    container.style.justifyContent = "space-between";
+                    eventEl.appendChild(container);
 
                     if (event.extendedProps.isRandomMission) {
                         eventEl.classList.add('random-mission');
                     }
+                    const text = document.createElement('div');
+                    text.textContent = event.title;
+                    text.style.alignContent = "center";
+                    container.appendChild(text);
+
 
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
-                    checkbox.id = `checkbox_${event.id}`;
-                    checkbox.name = `checkbox_${event.id}`;
+                    checkbox.id = `checkbox_${event.id}`; // Add unique ID
+                    checkbox.name = `checkbox_${event.id}`; // Add unique name
 
+                    // 로컬 스토리지에서 체크박스 상태 불러오기
                     checkbox.checked = getCheckboxState(event.id);
 
+                    // 소유자가 아닌 경우 체크박스를 비활성화
                     if (!isOwner) {
                         checkbox.disabled = true;
                     }
 
                     checkbox.addEventListener('change', () => {
-                        if (!isOwner) return;
+                        if (!isOwner) return; // 소유자가 아닌 경우 체크박스를 변경할 수 없음
                         saveCheckboxState(event.id, checkbox.checked);
                         const isRandomMission = event.extendedProps.isRandomMission;
                         console.log(`Checkbox for event ${event.id} changed to ${checkbox.checked}. isRandomMission: ${isRandomMission}`);
@@ -676,11 +730,14 @@
                             }
                         }
                     });
-
-                    eventEl.appendChild(checkbox);
+                    container.appendChild(checkbox);
 
                     const buttonsContainer = document.createElement('div');
                     buttonsContainer.className = 'buttons';
+                    buttonsContainer.style.width = "100%";
+                    buttonsContainer.style.display = "flex";
+                    buttonsContainer.style.justifyContent = "flex-end";
+                    buttonsContainer.style.marginTop ="2px";
                     eventEl.appendChild(buttonsContainer);
 
                     if (isOwner && !event.extendedProps.isRandomMission) {
@@ -689,12 +746,15 @@
                         editButton.addEventListener('click', () => {
                             openEditEventModal(event.id, event);
                         });
+                        editButton.style.marginRight="2px";
+                        editButton.style.background="#4B4C57"
                         buttonsContainer.appendChild(editButton);
-                    }
+                    } // 수정
 
                     if (isOwner) {
                         const deleteButton = document.createElement('button');
                         deleteButton.textContent = '삭제';
+                        deleteButton.style.background = "#4B4C57";
                         deleteButton.addEventListener('click', () => {
                             if (confirm('정말 삭제하시겠습니까?')) {
                                 const isRandomMission = event.extendedProps.isRandomMission;
@@ -705,6 +765,7 @@
                                         if (response.ok) {
                                             event.remove();
                                             eventEl.remove();
+                                            // 삭제 시 로컬 스토리지에서 체크박스 상태도 제거
                                             localStorage.removeItem(`checkbox_${event.id}`);
                                             if (isRandomMission) {
                                                 fetch(`/user/${currentUser.slug}/decrement-mission-success`, {
@@ -722,7 +783,6 @@
                         });
                         buttonsContainer.appendChild(deleteButton);
                     }
-
                     sidebarEventsEl.appendChild(eventEl);
                 });
             }
@@ -793,17 +853,18 @@
 
     </script>
 
-
 </head>
 <body>
 <div th:replace="~{nav.html::navbar}"></div>
-<h2 id="user-todo" th:data-nickname="${user.nickname}">
-<i class="fa-solid fa-seedling rank" th:if="${user.missionSuccessCount < 10}"></i>
-<i class="fa-solid fa-leaf rank" th:if="${user.missionSuccessCount >= 10 and user.missionSuccessCount < 20}"></i>
-<i class="fa-solid fa-tree tree-icon rank" th:if="${user.missionSuccessCount >= 20}"></i>
-[[${user.nickname}]]의 todo
-</h2>
-<div class="partner-box" id="partner-info"></div>
+<div id="user-info-container">
+    <h2 id="user-todo" th:data-nickname="${user.nickname}" style="margin: 0">
+        <i class="fa-solid fa-seedling rank" th:if="${user.missionSuccessCount < 10}"></i>
+        <i class="fa-solid fa-leaf rank" th:if="${user.missionSuccessCount >= 10 and user.missionSuccessCount < 20}"></i>
+        <i class="fa-solid fa-tree tree-icon rank" th:if="${user.missionSuccessCount >= 20}"></i>
+        [[${user.nickname}]]의 todo
+    </h2>
+    <h2 class="partner-box" id="partner-info" style="margin-bottom: 6px; margin-top: 0" ></h2>
+</div>
 <div id='calendar'></div>
 <div id="container">
     <div id="sidebar">
@@ -818,8 +879,8 @@
             <hr>
             <div id="guestbook-entries"></div>
         </div>
-        <div id="submitGuestBox">
-            <input type="text" id="guestbook-content" placeholder="방명록을 작성해주세요.">
+        <div id="submitGuestBox" style="width: 100%">
+            <input type="text" id="guestbook-content" placeholder="응원의 한 마디 부탁드려요!" style="margin:5px" >
             <button id="submitGuestBook" class="arrow-button" >></button>
         </div>
     </div>
