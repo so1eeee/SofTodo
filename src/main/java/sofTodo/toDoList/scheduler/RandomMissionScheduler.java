@@ -26,7 +26,7 @@ public class RandomMissionScheduler {
         this.toDoService = toDoService;
     }
 
-    @Scheduled(cron = "0 47 17 * * *")
+    @Scheduled(cron = "0 23 14 * * *")
     public void addRandomMissionsToUsers() {
         List<RandomMission> missions = randomMissionService.findAll();
         List<User> users = userService.findAll();

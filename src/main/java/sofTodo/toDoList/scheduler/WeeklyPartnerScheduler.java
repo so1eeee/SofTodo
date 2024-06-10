@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import sofTodo.toDoList.domain.User;
 import sofTodo.toDoList.repository.UserRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -15,16 +16,14 @@ public class WeeklyPartnerScheduler {
     @Autowired
     private UserRepository userRepository;
 
-    @Scheduled(cron = "0 36 21 * * SUN") // 매주 일요일 9시 37분에 실행
+    @Scheduled(cron = "0 24 14 * * MON") // 매주 월요일 2시 38분에 실행
     public void assignWeeklyPartners() {
         List<User> users = userRepository.findAll();
-        Random random = new Random();
+        Collections.shuffle(users); // 사용자 목록을 무작위로 섞음
 
-        for (User user : users) {
-            User partner;
-            do {
-                partner = users.get(random.nextInt(users.size()));
-            } while (partner.getId().equals(user.getId())); // 본인을 파트너로 선택하지 않음
+        for (int i = 0; i < users.size(); i++) {
+            User user = users.get(i);
+            User partner = users.get((i + 1) % users.size()); // 다음 사용자를 파트너로 지정, 마지막 사용자는 첫 번째 사용자와 짝지음
 
             user.setWeeklyPartner(partner);
             userRepository.save(user);

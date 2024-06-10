@@ -82,9 +82,18 @@ public class UserService {
     public void decrementMissionSuccessCount(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        user.setMissionSuccessCount(user.getMissionSuccessCount() - 1);
+
+        Long newMissionSuccessCount = user.getMissionSuccessCount() - 1;
+
+        // Ensure mission success count does not go below 0
+        if (newMissionSuccessCount < 0) {
+            newMissionSuccessCount = 0L;
+        }
+
+        user.setMissionSuccessCount(newMissionSuccessCount);
         userRepository.save(user);
     }
+
 
     @Transactional
     public void updateNickname(String username, String newNickname) {
